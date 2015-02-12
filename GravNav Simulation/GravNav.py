@@ -117,28 +117,28 @@ def runUnitTest():
 	# plt.show()
 
 
-	## Get plot of energy
-	viking.leapFrog(solarsystem, Earth.radius, 0., 0., 0., 7, 7, 1, 1500000)
-	x = Symbol('x')
-	y = Symbol('y')
-	z = Symbol('z')
-	potential = lambdify((x,y,z), Earth.potential\
-			, modules = 'numpy')
-	potential_energy = viking.mass*(potential(numpy.array(viking.xarray),numpy.array(viking.yarray),numpy.array(viking.zarray)))
-	kinetic_energy = .5*viking.mass*(numpy.array(viking.xdotarray)**2 + numpy.array(viking.ydotarray)**2 + numpy.array(viking.zdotarray)**2)
-	total = potential_energy[:1500000]+kinetic_energy[:1500000]
-	plt.plot(potential_energy,label="Potential Energy")
-	plt.plot(kinetic_energy,label="Kinetic Energy")
-	plt.plot(total,label="Total Energy")
-	plt.title("Conservation of Energy (Verification of Numeric Integrator)")
-	plt.xlabel("Time (1.5 million timesteps)")
-	plt.ylabel("Energy")
-	plt.legend()
-	plt.show()
-	print len(potential_energy)
-	print len(kinetic_energy)
-	print "Initial total energy: "+str(total[0])+"\n"
-	print "Final total energy: "+str(total[-1])+"\n"
+	# ## Get plot of energy
+	# viking.leapFrog(solarsystem, Earth.radius, 0., 0., 0., 7, 7, 1, 1500000)
+	# x = Symbol('x')
+	# y = Symbol('y')
+	# z = Symbol('z')
+	# potential = lambdify((x,y,z), Earth.potential\
+	# 		, modules = 'numpy')
+	# potential_energy = viking.mass*(potential(numpy.array(viking.xarray),numpy.array(viking.yarray),numpy.array(viking.zarray)))
+	# kinetic_energy = .5*viking.mass*(numpy.array(viking.xdotarray)**2 + numpy.array(viking.ydotarray)**2 + numpy.array(viking.zdotarray)**2)
+	# total = potential_energy[:1500000]+kinetic_energy[:1500000]
+	# plt.plot(potential_energy,label="Potential Energy")
+	# plt.plot(kinetic_energy,label="Kinetic Energy")
+	# plt.plot(total,label="Total Energy")
+	# plt.title("Conservation of Energy (Verification of Numeric Integrator)")
+	# plt.xlabel("Time (1.5 million timesteps)")
+	# plt.ylabel("Energy")
+	# plt.legend()
+	# plt.show()
+	# print len(potential_energy)
+	# print len(kinetic_energy)
+	# print "Initial total energy: "+str(total[0])+"\n"
+	# print "Final total energy: "+str(total[-1])+"\n"
 
 	# ## Just-Less-Than-Escape velocity
 	# viking.leapFrog(solarsystem, (Earth.radius), 0., 0., 0., (0),(11.1),100,16500)
@@ -164,21 +164,45 @@ def runUnitTest():
 	# ax.legend(loc='upper right',prop={'size':10})
 	# plt.show()
 
-	# ## Add a gravitating body
-	# anotherEarth=Planet(spacecraft=viking,mass=5.972e24,eci_x=0,eci_y=25000,eci_z=20000,J2=1.7555e10)
-	# solarsystem.addPlanet(anotherEarth)
+	## Add a gravitating body
+	anotherEarth=Planet(spacecraft=viking,mass=5.972e24,eci_x=0,eci_y=25000,eci_z=20000,J2=1.7555e10)
+	solarsystem.addPlanet(anotherEarth)
 
-	# ## Two Gravitating Bodies
-	# viking.leapFrog(solarsystem, (Earth.radius), 0., 0., 0., (10),(0),10,20000)
-	# fig = plt.figure()
-	# ax = fig.gca(projection='3d')
-	# ax.plot(numpy.array(viking.zarray),\
-	# 	numpy.array(viking.yarray),\
-	# 	numpy.array(viking.xarray),\
-	# 	label="Spacecraft Position")
-	# plt.title("Trajectory under the influence of Two Earth-Like Planets, 30,000 km Separation")
-	# ax.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	## Two Gravitating Bodies
+	viking.leapFrog(solarsystem, (Earth.radius), 0., 0., 0., (12),(0),10,20000)
+	fig = plt.figure()
+	ax = fig.gca(projection='3d')
+	ax.plot(numpy.array(viking.zarray),\
+		numpy.array(viking.yarray),\
+		numpy.array(viking.xarray),\
+		label="Spacecraft Position")
+	plt.title("Trajectory under the influence of Two Earth-Like Planets, 30,000 km Separation")
+	ax.legend(loc='upper right',prop={'size':10})
+	plt.show()
+
+
+	## Conservation of energy, two bodies
+	x = Symbol('x')
+	y = Symbol('y')
+	z = Symbol('z')
+	potential = lambdify((x,y,z), solarsystem.landscape\
+			, modules = 'numpy')
+	potential_energy = 2*viking.mass*(potential(numpy.array(viking.xarray),numpy.array(viking.yarray),numpy.array(viking.zarray)))
+	kinetic_energy = .5*viking.mass*(numpy.array(viking.xdotarray)**2 + numpy.array(viking.ydotarray)**2 + numpy.array(viking.zdotarray)**2)
+	total = potential_energy[:200000]+kinetic_energy[:200000]
+	plt.plot(potential_energy,label="Potential Energy")
+	plt.plot(kinetic_energy,label="Kinetic Energy")
+	plt.plot(total,label="Total Energy")
+	plt.title("Conservation of Energy, 2 Gravitating Bodies (Verification of Numeric Integrator)")
+	plt.xlabel("Time (200,000 timesteps)")
+	plt.ylabel("Energy")
+	plt.legend()
+	plt.show()
+	print len(potential_energy)
+	print len(kinetic_energy)
+	print "Initial total energy: "+str(total[0])+"\n"
+	print "Final total energy: "+str(total[-1])+"\n"
+
 
 
 	# ## Solar Pressure
