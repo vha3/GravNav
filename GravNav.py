@@ -126,7 +126,7 @@ def runUnitTest():
 			, modules = 'numpy')
 	potential_energy = viking.mass*(potential(numpy.array(viking.xarray),numpy.array(viking.yarray),numpy.array(viking.zarray)))
 	kinetic_energy = .5*viking.mass*(numpy.array(viking.xdotarray)**2 + numpy.array(viking.ydotarray)**2 + numpy.array(viking.zdotarray)**2)
-	total = potential_energy[0:15000]+kinetic_energy[:15000]
+	total = potential_energy[:1500000]+kinetic_energy[:1500000]
 	plt.plot(potential_energy,label="Potential Energy")
 	plt.plot(kinetic_energy,label="Kinetic Energy")
 	plt.plot(total,label="Total Energy")
