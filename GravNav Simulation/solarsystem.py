@@ -94,6 +94,12 @@ class solarSystem(object):
 		self.acc_z += (-diff(self.landscape,self.z) - \
 			self.ext_z/self.spacecraft.mass)
 
+	def refreshPlanets(self):
+		planetlist = self.planets
+		self.planets = []
+		for i in planetlist:
+			self.addPlanet(i)
+
 	def showPotential(self):
 		xlist = []
 		ylist = []

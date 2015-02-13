@@ -18,3 +18,8 @@ W=numpy.double(1.362e9)
 
 # Speed of light
 c = numpy.double(2.99792458e5)
+
+# Planetary positions, minute-by-minute from deployment
+# until 1 week after deployment
+moonx, moony, moonz = numpy.loadtxt("moon.txt", unpack=True)
+sunx, suny, sunz = numpy.loadtxt("sun.txt", unpack=True)

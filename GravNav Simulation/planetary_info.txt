@@ -1,0 +1,127 @@
+*******************************************************************************
+ Revised : Jul 31, 2013                  Sun                                 10
+
+ PHYSICAL PROPERTIES (revised Jan 16, 2014):
+  GM (10^11 km^3/s^2)   = 1.3271244004193938  Mass (10^30 kg)   ~ 1.988544
+  Radius (photosphere)  = 6.963(10^5) km  Angular diam at 1 AU  = 1919.3"
+  Solar Radius (IAU)    = 6.955(10^5) km  Mean density          = 1.408 g/cm^3
+  Surface gravity       =  274.0 m/s^2    Moment of inertia     = 0.059
+  Escape velocity       =  617.7 km/s     Adopted sidereal per  = 25.38 d
+  Pole (RA,DEC in deg.) =  286.13,63.87   Obliquity to ecliptic = 7 deg 15'        
+  Solar constant (1 AU) = 1367.6 W/m^2    Solar lumin.(erg/s)   =  3.846(10^33)
+  Mass-energy conv rate = 4.3(10^12 gm/s) Effective temp (K)    =  5778
+  Surf. temp (photosphr)= 6600 K (bottom) Surf. temp (photosphr)=  4400 K (top)
+  Photospheric depth    = ~400 km         Chromospheric depth   = ~2500 km
+  Sunspot cycle         = 11.4 yr         Cycle 22 sunspot min. =  1991 A.D.
+
+  Motn. rel to nrby strs= apex : RA=271 deg; DEC=+30 deg
+                          speed: 19.4 km/s = 0.0112 AU/day
+  Motn. rel to 2.73K BB = apex : l=264.7+-0.8; b=48.2+-0.5
+                          speed: 369 +-11 km/s
+*******************************************************************************
+ 
+
+ 
+
+*******************************************************************************
+Ephemeris / WWW_USER Fri Feb 13 09:21:32 2015 Pasadena, USA      / Horizons    
+*******************************************************************************
+Target body name: Sun (10)                        {source: DE-0431LE-0431}
+Center body name: Earth (399)                     {source: DE-0431LE-0431}
+Center-site name: BODY CENTER
+*******************************************************************************
+Start time      : A.D. 2017-Dec-15 00:00:00.0000 CT 
+Stop  time      : A.D. 2017-Dec-22 00:00:00.0000 CT 
+Step-size       : 1 minutes
+*******************************************************************************
+Center geodetic : 0.00000000,0.00000000,0.0000000 {E-lon(deg),Lat(deg),Alt(km)}
+Center cylindric: 0.00000000,0.00000000,0.0000000 {E-lon(deg),Dxy(km),Dz(km)}
+Center radii    : 6378.1 x 6378.1 x 6356.8 km     {Equator, meridian, pole}    
+Output units    : KM-S                                                         
+Output format   : 01
+Reference frame : ICRF/J2000.0                                                 
+Output type     : GEOMETRIC cartesian states
+Coordinate systm: Earth Mean Equator and Equinox of Reference Epoch            
+*******************************************************************************
+JDCT ,   , X, Y, Z,
+*******************************************************************************
+
+
+*******************************************************************************
+Revised: Mar 11, 1998             Moon / (Earth)                            301
+ 
+PHYSICAL PROPERTIES:
+ Radius, km            = 1737.53+-0.03   Mass, 10^20 kg        =  734.9
+ Density, gm cm^-3     =    3.3437       Geometric albedo      =    0.12
+ V(1,0)                =   +0.21         GM, km^3/s^2          = 4902.798+-.005
+ Earth/Moon mass ratio = 81.300587       Surface gravity       =    1.62 m s^-2
+ Nearside crust. thick.= 58+-8 km        Farside crust. thick. = ~80 - 90 km
+ Heat flow, Apollo 15  = 3.1+-.6 mW/m^2  Heat flow, Apollo 17  = 2.2+-.5 mW/m^2
+ Mean crustal density  = 2.97+-.07g/cm^3 k2                    = 0.0302+-.0012 
+ Induced magnetic mom. = 4.23x10^22Gcm^3 Magnetometer moment   = 435+-15
+
+DYNAMICAL CHARACTERISTICS:
+ Mean angular diameter = 31'05.2"        Orbit period          = 27.321582 d
+ Obliquity to orbit    = 6.67 deg        Eccentricity          = 0.05490
+ Semi-major axis, a    = 384400 km       Inclination           = 5.145 deg
+ Mean motion, rad/s    = 2.6616995x10^-6 Nodal period          = 6798.38 d
+ Apsidal period        = 3231.50 d       Mom. of inertia C/MR^2= 0.3935+-.0011
+ beta (C-A/B), x10^-4  = 6.31(72+-15)    gamma (B-A/C), x10^-4 = 2.278(8+-2)
+*******************************************************************************
+ 
+
+ 
+
+*******************************************************************************
+Ephemeris / WWW_USER Fri Feb 13 09:16:56 2015 Pasadena, USA      / Horizons    
+*******************************************************************************
+Target body name: Moon (301)                      {source: DE-0431LE-0431}
+Center body name: Earth (399)                     {source: DE-0431LE-0431}
+Center-site name: BODY CENTER
+*******************************************************************************
+Start time      : A.D. 2017-Dec-15 00:00:00.0000 CT 
+Stop  time      : A.D. 2017-Dec-22 00:00:00.0000 CT 
+Step-size       : 1 minutes
+*******************************************************************************
+Center geodetic : 0.00000000,0.00000000,0.0000000 {E-lon(deg),Lat(deg),Alt(km)}
+Center cylindric: 0.00000000,0.00000000,0.0000000 {E-lon(deg),Dxy(km),Dz(km)}
+Center radii    : 6378.1 x 6378.1 x 6356.8 km     {Equator, meridian, pole}    
+Output units    : KM-S                                                         
+Output format   : 01
+Reference frame : ICRF/J2000.0                                                 
+Output type     : GEOMETRIC cartesian states
+Coordinate systm: Earth Mean Equator and Equinox of Reference Epoch            
+*******************************************************************************
+JDCT ,   , X, Y, Z,
+*******************************************************************************
+
+$$EOE
+*******************************************************************************
+Coordinate system description:
+
+  Earth Mean Equator and Equinox of Reference Epoch
+
+    Reference epoch: J2000.0
+    xy-plane: plane of the Earth's mean equator at the reference epoch
+    x-axis  : out along ascending node of instantaneous plane of the Earth's
+              orbit and the Earth's mean equator at the reference epoch
+    z-axis  : along the Earth mean north pole at the reference epoch
+
+Symbol meaning  
+
+    JDCT     Epoch Julian Date, Coordinate Time
+      X      x-component of position vector (km)                               
+      Y      y-component of position vector (km)                               
+      Z      z-component of position vector (km)                               
+
+Geometric states/elements have no aberration corrections applied.
+
+ Computations by ...
+     Solar System Dynamics Group, Horizons On-Line Ephemeris System
+     4800 Oak Grove Drive, Jet Propulsion Laboratory
+     Pasadena, CA  91109   USA
+     Information: http://ssd.jpl.nasa.gov/
+     Connect    : telnet://ssd.jpl.nasa.gov:6775  (via browser)
+                  telnet ssd.jpl.nasa.gov 6775    (via command-line)
+     Author     : Jon.Giorgini@jpl.nasa.gov
+*******************************************************************************
