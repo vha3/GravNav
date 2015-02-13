@@ -19,78 +19,78 @@ def runUnitTest():
 	solarsystem.addPlanet(Earth)
 
 
-	# ## Planet Potential Landscape
-	# Earth_vis.showPotential()
+	## Planet Potential Landscape
+	Earth_vis.showPotential()
 
-	# ## Falling from height along x axis
-	# viking.leapFrog(solarsystem,Earth.radius+.100,0,0,0,0,0,.25,18)
-	# plt.plot((numpy.array(viking.xarray)-Earth.radius)*1000,label="position")
-	# plt.plot(numpy.array(viking.xdotarray)*1000, label="velocity")
-	# plt.title("x-Position, Falling from 100m Height above Earth's Surface")
-	# plt.xlabel("time (4.5 sec)")
-	# plt.ylabel("x")
-	# plt.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	## Falling from height along x axis
+	viking.leapFrog(solarsystem,Earth.radius+.100,0,0,0,0,0,.25,18)
+	plt.plot((numpy.array(viking.xarray)-Earth.radius)*1000,label="position")
+	plt.plot(numpy.array(viking.xdotarray)*1000, label="velocity")
+	plt.title("x-Position, Falling from 100m Height above Earth's Surface")
+	plt.xlabel("time (4.5 sec)")
+	plt.ylabel("x")
+	plt.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
-	# ## Falling from height along y axis
-	# viking.leapFrog(solarsystem,0,Earth.radius+.100,0,0,0,0,.25,18)
-	# plt.plot((numpy.array(viking.yarray)-Earth.radius)*1000,label="position")
-	# plt.plot(numpy.array(viking.ydotarray)*1000, label="velocity")
-	# plt.title("y-Position, Falling from 100m Height above Earth's Surface")
-	# plt.xlabel("time (4.5 sec)")
-	# plt.ylabel("y")
-	# plt.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	## Falling from height along y axis
+	viking.leapFrog(solarsystem,0,Earth.radius+.100,0,0,0,0,.25,18)
+	plt.plot((numpy.array(viking.yarray)-Earth.radius)*1000,label="position")
+	plt.plot(numpy.array(viking.ydotarray)*1000, label="velocity")
+	plt.title("y-Position, Falling from 100m Height above Earth's Surface")
+	plt.xlabel("time (4.5 sec)")
+	plt.ylabel("y")
+	plt.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
-	# ## Falling from height along z axis
-	# viking.leapFrog(solarsystem,0,0,Earth.radius+.100,0,0,0,.25,18)
-	# plt.plot((numpy.array(viking.zarray)-Earth.radius)*1000,label="position")
-	# plt.plot(numpy.array(viking.zdotarray)*1000, label="velocity")
-	# plt.title("z-Position, Falling from 100m Height above Earth's Surface")
-	# plt.xlabel("time (4.5 sec)")
-	# plt.ylabel("z")
-	# plt.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	## Falling from height along z axis
+	viking.leapFrog(solarsystem,0,0,Earth.radius+.100,0,0,0,.25,18)
+	plt.plot((numpy.array(viking.zarray)-Earth.radius)*1000,label="position")
+	plt.plot(numpy.array(viking.zdotarray)*1000, label="velocity")
+	plt.title("z-Position, Falling from 100m Height above Earth's Surface")
+	plt.xlabel("time (4.5 sec)")
+	plt.ylabel("z")
+	plt.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
-	# ## Ballistic trajectory in xy plane
-	# viking.leapFrog(solarsystem,Earth.radius+.50,0,0,0,.500,0,.25,18)
-	# plt.plot((numpy.array(viking.yarray))*1000,(numpy.array(viking.xarray)-Earth.radius)*1000\
-	# 	,label="ballistic position")
-	# plt.xlabel("y position")
-	# plt.ylabel("x position")
-	# plt.title("Ballistic Trajectory in xy Plane")
-	# plt.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	## Ballistic trajectory in xy plane
+	viking.leapFrog(solarsystem,Earth.radius+.50,0,0,0,.500,0,.25,18)
+	plt.plot((numpy.array(viking.yarray))*1000,(numpy.array(viking.xarray)-Earth.radius)*1000\
+		,label="ballistic position")
+	plt.xlabel("y position")
+	plt.ylabel("x position")
+	plt.title("Ballistic Trajectory in xy Plane")
+	plt.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
-	# ## Ballistic trajectory in xz plane
-	# viking.leapFrog(solarsystem,Earth.radius+.50,0,0,0,0,.500,.25,18)
-	# plt.plot(numpy.array(viking.zarray)*1000,(numpy.array(viking.xarray)-Earth.radius)*1000\
-	# 	,label="ballistic position")
-	# plt.xlabel("z position")
-	# plt.ylabel("x position")
-	# plt.title("Ballistic Trajectory in xz Plane")
-	# plt.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	## Ballistic trajectory in xz plane
+	viking.leapFrog(solarsystem,Earth.radius+.50,0,0,0,0,.500,.25,18)
+	plt.plot(numpy.array(viking.zarray)*1000,(numpy.array(viking.xarray)-Earth.radius)*1000\
+		,label="ballistic position")
+	plt.xlabel("z position")
+	plt.ylabel("x position")
+	plt.title("Ballistic Trajectory in xz Plane")
+	plt.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
-	# ## Ballistic trajectory in yz plane
-	# viking.leapFrog(solarsystem,0,Earth.radius+.50,0,0,0,.500,.25,18)
-	# plt.plot(numpy.array(viking.zarray)*1000,(numpy.array(viking.yarray)-Earth.radius)*1000\
-	# 	,label="ballistic position")
-	# plt.xlabel("z position")
-	# plt.ylabel("y position")
-	# plt.title("Ballistic Trajectory in yz Plane")
-	# plt.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	## Ballistic trajectory in yz plane
+	viking.leapFrog(solarsystem,0,Earth.radius+.50,0,0,0,.500,.25,18)
+	plt.plot(numpy.array(viking.zarray)*1000,(numpy.array(viking.yarray)-Earth.radius)*1000\
+		,label="ballistic position")
+	plt.xlabel("z position")
+	plt.ylabel("y position")
+	plt.title("Ballistic Trajectory in yz Plane")
+	plt.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
-	# ## Ballistic trajectory in xyz space
-	# viking.leapFrog(solarsystem,Earth.radius+.50,0,0,0,.500,.500,.25,18)
-	# fig = plt.figure()
-	# ax = fig.gca(projection='3d')
-	# ax.plot(numpy.array(viking.zarray)*1000,numpy.array(viking.yarray)*1000\
-	# 	,(numpy.array(viking.xarray)-Earth.radius)*1000,label="ballistic position")
-	# plt.title("Ballistic Trajectory in 3d Space")
-	# ax.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	## Ballistic trajectory in xyz space
+	viking.leapFrog(solarsystem,Earth.radius+.50,0,0,0,.500,.500,.25,18)
+	fig = plt.figure()
+	ax = fig.gca(projection='3d')
+	ax.plot(numpy.array(viking.zarray)*1000,numpy.array(viking.yarray)*1000\
+		,(numpy.array(viking.xarray)-Earth.radius)*1000,label="ballistic position")
+	plt.title("Ballistic Trajectory in 3d Space")
+	ax.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
 	## Nodal Regression
 	viking.leapFrog(solarsystem, (Earth.radius), 0., 0., 0., (5.5921),(5.5921),60,73571)
