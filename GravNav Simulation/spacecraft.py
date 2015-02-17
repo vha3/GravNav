@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy
 import math
+import config
 ##################################################################
 ## Create the Spacecraft class ###################################
 ##################################################################
@@ -45,7 +46,8 @@ class Spacecraft(object):
 
 	def leapFrog(self,solarsystem,xinit,yinit,zinit,xdotinit,ydotinit,zdotinit,dt,numsteps, x = Symbol('x')\
 		, y = Symbol('y'), z = Symbol('z'), xdot = Symbol('xdot')\
-		, ydot = Symbol('ydot'), zdot = Symbol('zdot')):
+		, ydot = Symbol('ydot'), zdot = Symbol('zdot'), resetFlag = True\
+		, propagationFlag = config.propagationFlag):
 		###########################################################
 		## Initializations ########################################
 		###########################################################
@@ -59,22 +61,26 @@ class Spacecraft(object):
 		self.ydotn = 0
 		self.zdotn = 0
 
-		self.xarray = []
-		self.yarray = []
-		self.zarray = []
-		self.xdotarray = []
-		self.ydotarray = []
-		self.zdotarray = []
+		if resetFlag == True:
+			self.xarray = []
+			self.yarray = []
+			self.zarray = []
+			self.xdotarray = []
+			self.ydotarray = []
+			self.zdotarray = []
 
-		self.xarray.extend([xinit])
-		self.xarray.extend([xinit])
-		self.yarray.extend([yinit])
-		self.yarray.extend([yinit])
-		self.zarray.extend([zinit])
-		self.zarray.extend([zinit])
-		self.xdotarray.extend([xdotinit])
-		self.ydotarray.extend([ydotinit])
-		self.zdotarray.extend([zdotinit])
+			self.xarray.extend([xinit])
+			self.xarray.extend([xinit])
+			self.yarray.extend([yinit])
+			self.yarray.extend([yinit])
+			self.zarray.extend([zinit])
+			self.zarray.extend([zinit])
+			self.xdotarray.extend([xdotinit])
+			self.ydotarray.extend([ydotinit])
+			self.zdotarray.extend([zdotinit])
+
+		else:
+			pass
 
 
 		acceleration_x = lambdify((x,y,z,xdot), solarsystem.acc_x\
@@ -86,6 +92,20 @@ class Spacecraft(object):
 
 
 		for k in range(numsteps):
+
+			if propagationFlag == True:
+				a = int((k*dt)/60.)
+				b = int(((k-1)*dt)/60.)
+				if k>0 and (a != b):
+					solarsystem.moveForward(a-b)
+					acceleration_x = lambdify((x,y,z,xdot), solarsystem.acc_x\
+						, modules = 'numpy')
+					acceleration_y = lambdify((x,y,z,ydot), solarsystem.acc_y\
+						, modules = 'numpy')
+					acceleration_z = lambdify((x,y,z,zdot), solarsystem.acc_z\
+						, modules = 'numpy')
+				else:
+					pass
 
 			self.xdottemp = (self.xdotarray[-1] + dt*\
 				(acceleration_x(self.xarray[-1]+0j,self.yarray[-1]+0j\

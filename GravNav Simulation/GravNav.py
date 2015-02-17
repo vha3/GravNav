@@ -8,19 +8,20 @@ import math
 from spacecraft import Spacecraft
 from solarsystem import solarSystem
 from planet import Planet
+import config
 
 numpy.seterr(all="print")
 
 def runUnitTest():
 	viking = Spacecraft()
-	Earth = Planet(spacecraft = viking, mass=5.972e24,eci_x=0,eci_y=0,eci_z=0)
-	Earth_vis = Planet(spacecraft = viking, mass=5.972e50,eci_x=0,eci_y=0,eci_z=0)
+	Earth = Planet(spacecraft = viking, configuration="earth")# mass=5.972e24,eci_x=0,eci_y=0,eci_z=0)
+	heavyEarth = Planet(spacecraft = viking, configuration="heavyearth")# mass=5.972e50,eci_x=0,eci_y=0,eci_z=0)
 	solarsystem = solarSystem(spacecraft=viking)
 	solarsystem.addPlanet(Earth)
 
 
 	## Planet Potential Landscape
-	Earth_vis.showPotential()
+	heavyEarth.showPotential()
 
 	## Falling from height along x axis
 	viking.leapFrog(solarsystem,Earth.radius+.100,0,0,0,0,0,.25,18)
@@ -181,7 +182,7 @@ def runUnitTest():
 	plt.show()
 
 	## Add a gravitating body
-	anotherEarth=Planet(spacecraft=viking,mass=5.972e24,eci_x=0,eci_y=25000,eci_z=20000,J2=1.7555e10)
+	anotherEarth=Planet(spacecraft=viking, configuration="anotherearth")#mass=5.972e24,eci_x=0,eci_y=25000,eci_z=20000,J2=1.7555e10)
 	solarsystem.addPlanet(anotherEarth)
 
 	## Two Gravitating Bodies
@@ -278,9 +279,35 @@ def runUnitTest():
 	# plt.show()
 	# altitude = []
 
+def cubeSat():
+	viking = Spacecraft()
+	Earth = Planet(spacecraft = viking, configuration="earth")# mass=5.972e24,eci_x=0,eci_y=0,eci_z=0)
+	Moon = Planet(spacecraft = viking, configuration="moon")# mass=5.972e50,eci_x=0,eci_y=0,eci_z=0)
+	Sun = Planet(spacecraft = viking, configuration="sun")
+	solarsystem = solarSystem(spacecraft=viking)
+	solarsystem.addPlanet(Earth)
+	solarsystem.addPlanet(Moon)
+	solarsystem.addPlanet(Sun)
 
+	## CubeSat Trajectory
+	viking.leapFrog(solarsystem, -1.501540312811781e04, \
+		-2.356897680091111e4, 2.241504923500546e3,\
+		-4.855378922082240e-1, -5.048763191594085,-8.799883161637991e-1,60,4320)#00)
+	fig = plt.figure()
+	ax = fig.gca(projection='3d')
+	ax.plot(numpy.array(viking.zarray),\
+		numpy.array(viking.yarray),\
+		numpy.array(viking.xarray),\
+		label="Spacecraft Position")
+	ax.plot(config.moonx[:config.index],\
+		config.moony[:config.index],config.moonz[config.index],\
+		label="Moon Position")
+	plt.title("Passive Trajectory")
+	ax.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
-runUnitTest()
+cubeSat()
+#runUnitTest()
 
 
 	

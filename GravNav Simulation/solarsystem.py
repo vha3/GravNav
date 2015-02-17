@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy
 import math
+from copy import deepcopy
 #######################################################
 ## Create solarSystem class, which contains objects
 ## of the Planet class. For each planet that is added
@@ -13,12 +14,17 @@ import math
 ## include that planet's contribution to the potential.
 #######################################################
 class solarSystem(object):
-	def __init__(self, spacecraft, planets = [], landscape = 0, visualization_landscape = 0\
+	def __init__(self, spacecraft, index=None, planets = [], landscape = 0, visualization_landscape = 0\
 		,vis = None, x = Symbol('x'), y = Symbol('y'), z = Symbol('z')\
 		,acc_x = 0, acc_y = 0, acc_z = 0, ext_x = 0., ext_y = 0., ext_z = 0.\
-		,solarx = 0, solary = 0, solarz = 0,sun_eci_x = 9.583978400242774e7\
-		,sun_eci_y = -1.027137783167994e8, sun_eci_z = -4.452859933622356e7\
-		,solarFlag = False):
+		,solarx = 0, solary = 0, solarz = 0,sun_eci_x = None\
+		,sun_eci_y = None, sun_eci_z = None\
+		,solarFlag = None, c = None, W = None, G = None):
+
+		executable = "universedata = config.universe"
+		exec(executable)
+		self.index = config.index
+
 		self.planets = planets
 		self.landscape = landscape
 		self.visualization_landscape = visualization_landscape
@@ -31,11 +37,14 @@ class solarSystem(object):
 		self.ext_x = ext_x
 		self.ext_y = ext_y
 		self.ext_z = ext_z
-		self.sun_eci_x = sun_eci_x
-		self.sun_eci_y = sun_eci_y
-		self.sun_eci_z = sun_eci_z
+		self.sun_eci_x = universedata[0][self.index]
+		self.sun_eci_y = universedata[1][self.index]
+		self.sun_eci_z = universedata[2][self.index]
 		self.spacecraft = spacecraft
-		self.solarFlag = solarFlag
+		self.solarFlag = universedata[3]
+		self.c = universedata[4]
+		self.W = universedata[5]
+		self.G = universedata[6]
 
 		#####################################################################
 		## Currently, solar pressure does not check if the spacecraft has a
@@ -53,7 +62,7 @@ class solarSystem(object):
 			solar_z = self.sun_eci_z - self.z
 			solar_dist = sqrt(solar_x**2. +solar_y**2. +solar_z**2.)
 
-			solar_magnitude = (config.W/(config.c*((solar_x)**2. + (solar_y)**2. +\
+			solar_magnitude = (self.W/(self.c*((solar_x)**2. + (solar_y)**2. +\
 			(solar_z)**2)*(1./149597870.700)))*spacecraft.A # max angle
 
 			self.solarx = solar_magnitude*(solar_x/solar_dist)
@@ -69,6 +78,80 @@ class solarSystem(object):
 		self.ext_y+=self.solary
 		self.ext_z+=self.solarz
 
+	def reset(self, spacecraft, index=None, planets = [], landscape = 0, visualization_landscape = 0\
+		,vis = None, x = Symbol('x'), y = Symbol('y'), z = Symbol('z')\
+		,acc_x = 0, acc_y = 0, acc_z = 0, ext_x = 0., ext_y = 0., ext_z = 0.\
+		,solarx = 0, solary = 0, solarz = 0,sun_eci_x = None\
+		,sun_eci_y = None, sun_eci_z = None\
+		,solarFlag = None, c = None, W = None, G = None):
+
+		executable = "universedata = config.universe"
+		exec(executable)
+		self.index = config.index
+
+		self.planets = []
+		self.landscape = 0
+		self.visualization_landscape = 0
+		self.x = x
+		self.y = y
+		self.z = z
+		self.acc_x = 0.
+		self.acc_y = 0.
+		self.acc_z = 0.
+		self.ext_x = 0.
+		self.ext_y = 0.
+		self.ext_z = 0.
+		self.sun_eci_x = universedata[0][self.index]
+		self.sun_eci_y = universedata[1][self.index]
+		self.sun_eci_z = universedata[2][self.index]
+		self.spacecraft = spacecraft
+		self.solarFlag = universedata[3]
+		self.c = universedata[4]
+		self.W = universedata[5]
+		self.G = universedata[6]
+
+		#####################################################################
+		## Currently, solar pressure does not check if the spacecraft has a
+		## direct line of sight to the sun. It just assumes that the solar
+		## radiation is always exerting a force along the vector connecting
+		## spacecraft to sun.
+		##
+		## I also assume that the incident sunlight hits a planar surface, so
+		## this is an overestimate. Solar pressure is a feature of the solar
+		## system.
+		#####################################################################
+		if self.solarFlag == True:
+			solar_x = self.sun_eci_x - self.x
+			solar_y = self.sun_eci_y - self.y
+			solar_z = self.sun_eci_z - self.z
+			solar_dist = sqrt(solar_x**2. +solar_y**2. +solar_z**2.)
+
+			solar_magnitude = (self.W/(self.c*((solar_x)**2. + (solar_y)**2. +\
+			(solar_z)**2)*(1./149597870.700)))*spacecraft.A # max angle
+
+			self.solarx = solar_magnitude*(solar_x/solar_dist)
+			self.solary = solar_magnitude*(solar_y/solar_dist)
+			self.solarz = solar_magnitude*(solar_z/solar_dist)
+
+		else:
+			self.solarx = 0
+			self.solary = 0
+			self.solarz = 0
+
+		self.ext_x+=self.solarx
+		self.ext_y+=self.solary
+		self.ext_z+=self.solarz
+
+	def moveForward(self, amount):
+		config.index+=amount
+		sc = self.spacecraft
+		planetlist = deepcopy(self.planets)
+		for i in planetlist:
+			conf = i.configuration
+			i.reset(sc,conf)
+		self.reset(sc)
+		for i in planetlist:
+			self.addPlanet(i)	
 
 	def addPlanet(self,planet):
 		self.planets.extend([planet])
@@ -93,12 +176,6 @@ class solarSystem(object):
 			self.ext_y/self.spacecraft.mass)
 		self.acc_z += (-diff(self.landscape,self.z) - \
 			self.ext_z/self.spacecraft.mass)
-
-	def refreshPlanets(self):
-		planetlist = self.planets
-		self.planets = []
-		for i in planetlist:
-			self.addPlanet(i)
 
 	def showPotential(self):
 		xlist = []

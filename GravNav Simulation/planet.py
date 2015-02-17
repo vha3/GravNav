@@ -22,62 +22,143 @@ import math
 ##		 planet.
 ##
 ###################################################
-
-###################################################
-## Define constants necessary for modeling Earth
-## atmospheric drag
-##
-## po = sea level standard atmospheric pressure
-## To = sea level standard temperature
-## g = Earth-surface gravitational acceleration
-## L = temperature lapse rate
-## R = Ideal gas constant
-## M = molar mass of dry air (parameter for planet)
-##
-## NOTE: These values are Earth-specific. If you wish
-## to model drag for other bodies, change the values
-## from their defaults
-###################################################
-
 class Planet(object):
-	def __init__(self, spacecraft, mass=0, eci_x=None, eci_y=None, eci_z=None\
-		,x = Symbol('x'), y = Symbol('y'), z = Symbol('z'), potential=None\
-		,visualization_potential=None, drag_x = None\
-		,drag_y=None,drag_z=None, xdot = Symbol('xdot')\
-		,ydot = Symbol('ydot'),zdot = Symbol('zdot'), po =numpy.double(1.01325e2)\
-		,To = numpy.double(288.15), g = numpy.double(9.80665e-3)\
-		,L=numpy.double(6.5), R = numpy.double(8.31447e0)\
-		,M = 2.89644e-2, J2=1.7555e10, radius = numpy.double(6.371e3)\
-		,dragflag = False):
-		self.mass = mass
-		self.eci_x = eci_x
-		self.eci_y = eci_y
-		self.eci_z = eci_z
-		self.J2 = J2
+	def __init__(self, spacecraft, configuration, index = None, mass=None\
+		, eci_x=None, eci_y=None, eci_z=None,x = Symbol('x'), y = Symbol('y')\
+		, z = Symbol('z'), potential=None,visualization_potential=None\
+		, drag_x = None,drag_y=None,drag_z=None, xdot = Symbol('xdot')\
+		,ydot = Symbol('ydot'),zdot = Symbol('zdot'), po =None,To = None\
+		, g = None,L=None, R = None,M = None, J2=None, radius = None\
+		,dragflag = None, c=None, W=None, G=None):
+
+		self.configuration = configuration
+
+		executable = "planetdata = config."+self.configuration
+		exec(executable)
+		print planetdata
+
+		nextecutable = "universedata = config.universe"
+		exec(nextecutable)
+
+		self.index=config.index
+
+		self.mass = planetdata[3]
+		self.eci_x = planetdata[0][self.index]
+		self.eci_y = planetdata[1][self.index]
+		self.eci_z = planetdata[2][self.index]
+		self.J2 = planetdata[5]
 		self.x = x
 		self.y = y
 		self.z = z
-		self.M = M
+		self.M = planetdata[11]
 		self.xdot = xdot
 		self.ydot = ydot
 		self.zdot = zdot
-		self.po = po
-		self.To = To
-		self.g = g
-		self.L = L
-		self.R = R
-		self.radius = radius
+		self.po = planetdata[6]
+		self.To = planetdata[7]
+		self.g = planetdata[8]
+		self.L = planetdata[9]
+		self.R = planetdata[10]
+		self.radius = planetdata[4]
 		self.spacecraft = spacecraft
-		self.dragflag = dragflag
+		self.dragflag = planetdata[12]
+		self.c = universedata[4]
+		self.W = universedata[5]
+		self.G = universedata[6]
 
-		self.potential = -(((config.G*self.mass)/sqrt((self.x-self.eci_x)**2. +\
+		self.potential = -(((self.G*self.mass)/sqrt((self.x-self.eci_x)**2. +\
 		 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.))\
 		+(self.J2*(1./(sqrt(((self.x-self.eci_x)**2.)+((self.y-self.eci_y)**2.)\
 			+((self.z-self.eci_z)**2.))**5.))*(1./2.)*\
 		(3.*((self.z-self.eci_z)**2.)-(((self.x-self.eci_x)**2.) + \
 			(self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.))))
 
-		self.visualization_potential = -(((config.G*self.mass)/sqrt((self.x-\
+		self.visualization_potential = -(((self.G*self.mass)/sqrt((self.x-\
+			self.eci_x)**2.+(self.y-self.eci_y)**2.))+\
+		(self.J2*(1./(sqrt(((self.x-self.eci_x)**2.)+\
+			((self.y-self.eci_y)**2.))**5.))*(1./2.)*\
+		(-(((self.x-self.eci_x)**2.)+ (self.y-self.eci_y)**2.))))
+
+		#####################################################################
+		## NOTE: The drag equations below are true for Earth atmosphere. If 
+		## you want to model other planetary atmospheres, make the constants
+		## fields for the planet class.
+		#####################################################################
+		if self.dragflag == True:
+			self.drag_x = (.5*(((self.po*((1.-((self.L*(sqrt((self.x-self.eci_x)**2.+\
+			 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)-self.radius))/self.To))**((self.g*\
+			self.M)/(self.R*self.L))))*M)/(self.R*(self.To-(self.L*(sqrt((self.x-self.eci_x)**2.+\
+			 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)-self.radius)))))*\
+			(self.xdot**2.)*self.spacecraft.Cd*self.spacecraft.A)
+
+			self.drag_y = (.5*(((self.po*((1.-((self.L*(sqrt((self.x-self.eci_x)**2.+\
+			 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)-self.radius))/self.To))**((self.g*\
+			self.M)/(self.R*self.L))))*M)/(self.R*(self.To-(self.L*(sqrt((self.x-self.eci_x)**2.+\
+			 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)-self.radius)))))*\
+			(self.ydot**2.)*self.spacecraft.Cd*self.spacecraft.A)
+
+			self.drag_z = (.5*(((self.po*((1.-((self.L*(sqrt((self.x-self.eci_x)**2.+\
+			 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)-self.radius))/self.To))**((self.g*\
+			self.M)/(self.R*self.L))))*M)/(self.R*(self.To-(self.L*(sqrt((self.x-self.eci_x)**2.+\
+			 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)-self.radius)))))*\
+			(self.zdot**2.)*self.spacecraft.Cd*self.spacecraft.A)
+
+		else:
+			self.drag_x = 0.
+			self.drag_y = 0.
+			self.drag_z = 0.
+
+	def reset(self, spacecraft, configuration, index = None, mass=None\
+		, eci_x=None, eci_y=None, eci_z=None,x = Symbol('x'), y = Symbol('y')\
+		, z = Symbol('z'), potential=None,visualization_potential=None\
+		, drag_x = None,drag_y=None,drag_z=None, xdot = Symbol('xdot')\
+		,ydot = Symbol('ydot'),zdot = Symbol('zdot'), po =None,To = None\
+		, g = None,L=None, R = None,M = None, J2=None, radius = None\
+		,dragflag = None, c=None, W=None, G=None):
+
+		self.configuration = configuration
+
+		executable = "planetdata = config."+self.configuration
+		exec(executable)
+
+		nextecutable = "universedata = config.universe"
+		exec(nextecutable)
+
+		self.index=config.index
+
+		self.mass = planetdata[3]
+		self.eci_x = planetdata[0][self.index]
+		print self.eci_x
+		self.eci_y = planetdata[1][self.index]
+		self.eci_z = planetdata[2][self.index]
+		self.J2 = planetdata[5]
+		self.x = x
+		self.y = y
+		self.z = z
+		self.M = planetdata[11]
+		self.xdot = xdot
+		self.ydot = ydot
+		self.zdot = zdot
+		self.po = planetdata[6]
+		self.To = planetdata[7]
+		self.g = planetdata[8]
+		self.L = planetdata[9]
+		self.R = planetdata[10]
+		self.radius = planetdata[4]
+		self.spacecraft = spacecraft
+		self.dragflag = planetdata[12]
+		self.c = universedata[4]
+		self.W = universedata[5]
+		self.G = universedata[6]
+
+		self.potential = -(((self.G*self.mass)/sqrt((self.x-self.eci_x)**2. +\
+		 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.))\
+		+(self.J2*(1./(sqrt(((self.x-self.eci_x)**2.)+((self.y-self.eci_y)**2.)\
+			+((self.z-self.eci_z)**2.))**5.))*(1./2.)*\
+		(3.*((self.z-self.eci_z)**2.)-(((self.x-self.eci_x)**2.) + \
+			(self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.))))
+
+		self.visualization_potential = -(((self.G*self.mass)/sqrt((self.x-\
 			self.eci_x)**2.+(self.y-self.eci_y)**2.))+\
 		(self.J2*(1./(sqrt(((self.x-self.eci_x)**2.)+\
 			((self.y-self.eci_y)**2.))**5.))*(1./2.)*\
