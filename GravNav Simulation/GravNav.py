@@ -290,9 +290,9 @@ def cubeSat():
 	solarsystem.addPlanet(Sun)
 
 	## CubeSat Trajectory
-	viking.leapFrog(solarsystem, -1.501540312811781e04, \
+	viking.leapFrog(solarsystem, -1.501540312811781e4, \
 		-2.356897680091111e4, 2.241504923500546e3,\
-		-4.855378922082240e-1, -5.048763191594085,-8.799883161637991e-1,60,4320)#00)
+		-4.855378922082240e-1, -5.048763191594085,-8.799883161637991e-1,300,900)
 	fig = plt.figure()
 	ax = fig.gca(projection='3d')
 	ax.plot(numpy.array(viking.zarray),\
@@ -300,8 +300,17 @@ def cubeSat():
 		numpy.array(viking.xarray),\
 		label="Spacecraft Position")
 	ax.plot(config.moonx[:config.index],\
-		config.moony[:config.index],config.moonz[config.index],\
+		config.moony[:config.index],config.moonz[:config.index],\
 		label="Moon Position")
+
+	u = numpy.linspace(0, 2 * numpy.pi, 100)
+	v = numpy.linspace(0, numpy.pi, 100)
+	x = Earth.radius * numpy.outer(numpy.cos(u), numpy.sin(v))
+	y = Earth.radius * numpy.outer(numpy.sin(u), numpy.sin(v))
+	z = Earth.radius * numpy.outer(numpy.ones(numpy.size(u)), numpy.cos(v))
+	ax.plot_surface(x, y, z,  rstride=4, cstride=4, color='r', label="Earth")
+
+
 	plt.title("Passive Trajectory")
 	ax.legend(loc='upper right',prop={'size':10})
 	plt.show()

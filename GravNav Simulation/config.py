@@ -24,7 +24,7 @@ import math
 ## The Moon #############################################
 #########################################################
 moonx, moony, moonz = numpy.loadtxt("moon.txt", unpack=True) #km
-moonmass = 734.9e20 #kg
+moonmass = 7.34767309e22 #kg
 moonradius = 1737.53 #km
 moonJ2 = 0.
 moonpo = 0.
@@ -43,7 +43,7 @@ moon = [moonx, moony, moonz, moonmass, moonradius,\
 ## The Sun #############################################
 ########################################################
 sunx, suny, sunz = numpy.loadtxt("sun.txt", unpack=True)
-sunmass = 1.988e30
+sunmass = 1.989e30
 sunradius = 6.963e5
 sunJ2 = 0.
 sunpo = 0.

@@ -170,6 +170,10 @@ class solarSystem(object):
 		## directly, these form a system of equations that could be used
 		## to find the absolute location of the spacecraft.
 		################################################################
+		self.acc_x = 0
+		self.acc_y = 0
+		self.acc_z = 0
+
 		self.acc_x += (-diff(self.landscape,self.x) - \
 			self.ext_x/self.spacecraft.mass)
 		self.acc_y += (-diff(self.landscape,self.y) - \
