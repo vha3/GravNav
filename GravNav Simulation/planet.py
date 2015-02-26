@@ -66,12 +66,12 @@ class Planet(object):
 		self.W = universedata[5]
 		self.G = universedata[6]
 
-		self.potential = -(((self.G*self.mass)/sqrt((self.x-self.eci_x)**2. +\
+		self.potential = (-(((self.G*self.mass)/sqrt((self.x-self.eci_x)**2. +\
 		 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.))\
 		+(self.J2*(1./(sqrt(((self.x-self.eci_x)**2.)+((self.y-self.eci_y)**2.)\
 			+((self.z-self.eci_z)**2.))**5.))*(1./2.)*\
 		(3.*((self.z-self.eci_z)**2.)-(((self.x-self.eci_x)**2.) + \
-			(self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.))))
+			(self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)))))
 
 		self.visualization_potential = -(((self.G*self.mass)/sqrt((self.x-\
 			self.eci_x)**2.+(self.y-self.eci_y)**2.))+\

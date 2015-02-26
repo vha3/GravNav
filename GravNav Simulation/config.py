@@ -6,6 +6,12 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy
 import math
 
+stkmoonx5, stkmoony5, stkmoonz5 = numpy.loadtxt("STK_5min_moon.txt", unpack=True)
+stkscx5, stkscy5, stkscz5 = numpy.loadtxt("STK_5min_sc.txt", unpack=True)
+
+stkmoonx1, stkmoony1, stkmoonz1 = numpy.loadtxt("STK_1min_moon.txt", unpack=True)
+stkscx1, stkscy1, stkscz1 = numpy.loadtxt("STK_1min_sc.txt", unpack=True)
+
 ####################################
 ## NOTE: Using units of km, NOT m ##
 ####################################
@@ -23,7 +29,7 @@ import math
 #########################################################
 ## The Moon #############################################
 #########################################################
-moonx, moony, moonz = numpy.loadtxt("moon.txt", unpack=True) #km
+moonx, moony, moonz = numpy.loadtxt("STK_1min_moon.txt", unpack=True) #km
 moonmass = 7.34767309e22 #kg
 moonradius = 1737.53 #km
 moonJ2 = 0.
@@ -35,7 +41,27 @@ moonR = 0.
 moonM = 0.
 moondragFlag = False
 
-moon = [moonx, moony, moonz, moonmass, moonradius,\
+
+moonx_interp=[]
+moony_interp=[]
+moonz_interp=[]
+for i in range(len(moonx)-1):
+	moonx_interp.extend([(moonx[i]+moonx[i+1])/2])
+	moony_interp.extend([(moony[i]+moony[i+1])/2])
+	moonz_interp.extend([(moonz[i]+moonz[i+1])/2])
+
+newmoonx=[]
+newmoony=[]
+newmoonz=[]
+for i in range(len(moonx)-1):
+	newmoonx.extend([moonx[i]])
+	newmoonx.extend([moonx_interp[i]])
+	newmoony.extend([moony[i]])
+	newmoony.extend([moony_interp[i]])
+	newmoonz.extend([moonz[i]])
+	newmoonz.extend([moonz_interp[i]])
+
+moon = [newmoonx, newmoony, newmoonz, moonmass, moonradius,\
  moonJ2, moonpo, moonTo, moong, moonL, moonR, moonM,\
   moondragFlag]
 
@@ -43,7 +69,7 @@ moon = [moonx, moony, moonz, moonmass, moonradius,\
 ## The Sun #############################################
 ########################################################
 sunx, suny, sunz = numpy.loadtxt("sun.txt", unpack=True)
-sunmass = 1.989e30
+sunmass = 1.988544e30
 sunradius = 6.963e5
 sunJ2 = 0.
 sunpo = 0.
@@ -62,9 +88,9 @@ sun = [sunx, suny, sunz, sunmass, sunradius,\
 ########################################################
 ## The Earth #############################################
 ########################################################
-earthx, earthy, earthz = numpy.array(numpy.zeros(len(moonx))),\
-numpy.array(numpy.zeros(len(moonx))),numpy.array(numpy.zeros(len(moonx)))
-earthmass = 5.972e24
+earthx, earthy, earthz = numpy.array(numpy.zeros(len(moon[0]))),\
+numpy.array(numpy.zeros(len(moon[0]))),numpy.array(numpy.zeros(len(moon[0])))
+earthmass = 5.97219e24
 earthradius = numpy.double(6.371e3)
 earthJ2 = numpy.double(1.7555e10)
 earthpo = numpy.double(1.01325e2)
@@ -80,11 +106,26 @@ earth = [earthx, earthy, earthz, earthmass, earthradius,\
   earthdragFlag]
 
 
+## Earth that propagates through space
+earthpx = []
+earthpy = []
+earthpz = []
+for i in range(len(earthx)):
+	earthpx.extend([10*i])
+	earthpy.extend([10*i])
+	earthpz.extend([10*i])
+
+earth2 = [earthpx, earthpy, earthpz, earthmass, earthradius,\
+ earthJ2, earthpo, earthTo, earthg, earthL, earthR, earthM,\
+  earthdragFlag]
+
+
+
 ########################################################
 ## Heavy Earth #########################################
 ########################################################
-heavyearthx, heavyearthy, heavyearthz = numpy.array(numpy.zeros(len(moonx))),\
-numpy.array(numpy.zeros(len(moonx))),numpy.array(numpy.zeros(len(moonx)))
+heavyearthx, heavyearthy, heavyearthz = numpy.array(numpy.zeros(len(moon[0]))),\
+numpy.array(numpy.zeros(len(moon[0]))),numpy.array(numpy.zeros(len(moon[0])))
 heavyearthmass = 5.972e50
 heavyearthradius = numpy.double(6.371e3)
 heavyearthJ2 = numpy.double(1.7555e10)
@@ -104,8 +145,8 @@ heavyearth = [heavyearthx, heavyearthy, heavyearthz, heavyearthmass, heavyearthr
 ########################################################
 ## Another Earth #######################################
 ########################################################
-anotherearthx, anotherearthy, anotherearthz = numpy.array(numpy.zeros(len(moonx))),\
-numpy.array(numpy.zeros(len(moonx))),numpy.array(numpy.zeros(len(moonx)))
+anotherearthx, anotherearthy, anotherearthz = numpy.array(numpy.zeros(len(moon[0]))),\
+numpy.array(numpy.zeros(len(moon[0]))),numpy.array(numpy.zeros(len(moon[0])))
 anotherearthy = anotherearthy + 25000
 anotherearthz = anotherearthz + 20000
 anotherearthmass = 5.972e24
@@ -137,9 +178,17 @@ c = numpy.double(2.99792458e5)
 W=numpy.double(1.362e9)
 # solar flag turns on/off solar pressure
 solarFlag = False
+# km to AU conversion
+kmAU = 149597870.700
 
-universe = [sunx,suny,sunz,solarFlag,c,W,G]
+universe = [sunx,suny,sunz,solarFlag,c,W,G,kmAU]
 
+####################################
+## Spacecraft Parameters ###########
+####################################
+scmass = 100
+Cd = 2.2
+A = numpy.double(1.e-6)
 
 ####################################
 ## Simulation Parameters ###########

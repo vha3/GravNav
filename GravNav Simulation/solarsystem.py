@@ -19,7 +19,7 @@ class solarSystem(object):
 		,acc_x = 0, acc_y = 0, acc_z = 0, ext_x = 0., ext_y = 0., ext_z = 0.\
 		,solarx = 0, solary = 0, solarz = 0,sun_eci_x = None\
 		,sun_eci_y = None, sun_eci_z = None\
-		,solarFlag = None, c = None, W = None, G = None):
+		,solarFlag = None, c = None, W = None, G = None, kmtoAU = None):
 
 		executable = "universedata = config.universe"
 		exec(executable)
@@ -45,6 +45,7 @@ class solarSystem(object):
 		self.c = universedata[4]
 		self.W = universedata[5]
 		self.G = universedata[6]
+		self.kmtoAU = universedata[7]
 
 		#####################################################################
 		## Currently, solar pressure does not check if the spacecraft has a
@@ -63,7 +64,7 @@ class solarSystem(object):
 			solar_dist = sqrt(solar_x**2. +solar_y**2. +solar_z**2.)
 
 			solar_magnitude = (self.W/(self.c*((solar_x)**2. + (solar_y)**2. +\
-			(solar_z)**2)*(1./149597870.700)))*spacecraft.A # max angle
+			(solar_z)**2)*(1./self.kmtoAU)))*spacecraft.A # max angle
 
 			self.solarx = solar_magnitude*(solar_x/solar_dist)
 			self.solary = solar_magnitude*(solar_y/solar_dist)
@@ -151,7 +152,8 @@ class solarSystem(object):
 			i.reset(sc,conf)
 		self.reset(sc)
 		for i in planetlist:
-			self.addPlanet(i)	
+			self.addPlanet(i)
+		del planetlist	
 
 	def addPlanet(self,planet):
 		self.planets.extend([planet])
@@ -174,12 +176,12 @@ class solarSystem(object):
 		self.acc_y = 0
 		self.acc_z = 0
 
-		self.acc_x += (-diff(self.landscape,self.x) - \
-			self.ext_x/self.spacecraft.mass)
-		self.acc_y += (-diff(self.landscape,self.y) - \
-			self.ext_y/self.spacecraft.mass)
-		self.acc_z += (-diff(self.landscape,self.z) - \
-			self.ext_z/self.spacecraft.mass)
+		self.acc_x = (-diff(self.landscape,self.x) - \
+			(self.ext_x/self.spacecraft.mass))
+		self.acc_y = (-diff(self.landscape,self.y) - \
+			(self.ext_y/self.spacecraft.mass))
+		self.acc_z = (-diff(self.landscape,self.z) - \
+			(self.ext_z/self.spacecraft.mass))
 
 	def showPotential(self):
 		xlist = []
