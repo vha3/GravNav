@@ -117,10 +117,13 @@ class Spacecraft(object):
 
 		for k in range(numsteps):
 
+			print "Number of planets: "+str(len(solarsystem.planets))
+
 			if propagationFlag == True:
-				a = int((k*dt)/60.)
-				b = int(((k-1)*dt)/60.)
-				if k>0 and (a != b):
+				a = int((k*dt)/150.)
+				b = int(((k-1)*dt)/150.)
+				if k>1 and (a != b):
+					print "Index number: "+str(config.index)
 					solarsystem.moveForward(a-b)
 					acceleration_new_x = lambdify((x,y,z,xdot), solarsystem.acc_x\
 						, modules = 'numpy')
@@ -134,23 +137,23 @@ class Spacecraft(object):
 							,self.zarray[-2]+0j,self.xdotarray[-2]+0j)) <\
 						numpy.real(acceleration_new_x(self.xarray[-1]+0j\
 							,self.yarray[-1]+0j,self.zarray[-1]+0j,self.xdotarray[-1]+0j)):
-						new_weightx=.2
-						old_weightx=.8
+						new_weightx=1
+						old_weightx=0
 
 					else:
-						new_weightx=.8
-						old_weightx=.2
+						new_weightx=1
+						old_weightx=0
 
 					if numpy.real(acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j\
 							,self.zarray[-2]+0j,self.ydotarray[-2]+0j)) <\
 						numpy.real(acceleration_new_y(self.xarray[-1]+0j\
 							,self.yarray[-1]+0j,self.zarray[-1]+0j,self.ydotarray[-1]+0j)):
-						new_weighty=.1
-						old_weighty=.9
+						new_weighty=1
+						old_weighty=0
 
 					else:
-						new_weighty=.9
-						old_weighty=.1					
+						new_weighty=1
+						old_weighty=0					
 
 					if numpy.real(acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j\
 							,self.zarray[-2]+0j,self.zdotarray[-2]+0j)) <\
@@ -160,8 +163,40 @@ class Spacecraft(object):
 						old_weightz=0
 
 					else:
-						new_weightz=0
-						old_weightz=1
+						new_weightz=1
+						old_weightz=0
+
+					# old_weightx=abs(numpy.real(acceleration_x(self.xarray[-2]+0j,self.yarray[-2]+0j\
+					# 		,self.zarray[-2]+0j,self.xdotarray[-2]+0j)))/\
+					# (abs(numpy.real(acceleration_x(self.xarray[-2]+0j,self.yarray[-2]+0j\
+					# 		,self.zarray[-2]+0j,self.xdotarray[-2]+0j))) +\
+					# 	abs(numpy.real(acceleration_new_x(self.xarray[-1]+0j\
+					# 		,self.yarray[-1]+0j,self.zarray[-1]+0j,self.xdotarray[-1]+0j))))
+
+					# new_weightx = 1.-old_weightx
+
+					# old_weighty=abs(numpy.real(acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j\
+					# 		,self.zarray[-2]+0j,self.ydotarray[-2]+0j)))/\
+					# (abs(numpy.real(acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j\
+					# 		,self.zarray[-2]+0j,self.ydotarray[-2]+0j))) +\
+					# 	abs(numpy.real(acceleration_new_y(self.xarray[-1]+0j\
+					# 		,self.yarray[-1]+0j,self.zarray[-1]+0j,self.ydotarray[-1]+0j))))
+
+					# new_weighty = 1.-old_weighty
+
+					# old_weightz=abs(numpy.real(acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j\
+					# 		,self.zarray[-2]+0j,self.zdotarray[-2]+0j)))/\
+					# (abs(numpy.real(acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j\
+					# 		,self.zarray[-2]+0j,self.zdotarray[-2]+0j))) +\
+					# 	abs(numpy.real(acceleration_new_z(self.xarray[-1]+0j\
+					# 		,self.yarray[-1]+0j,self.zarray[-1]+0j,self.zdotarray[-1]+0j))))
+
+					# new_weightz = 1.-old_weightz
+
+
+
+
+
 
 
 					self.xdottemp = (self.xdotarray[-2] + dt*\
@@ -251,6 +286,9 @@ class Spacecraft(object):
 					pass
 
 
+######################################################################
+########################### DO NOT TOUCH #############################
+######################################################################
 			self.xdottemp = (self.xdotarray[-1] + dt*\
 				(acceleration_x(self.xarray[-1]+0j,self.yarray[-1]+0j\
 					,self.zarray[-1]+0j,self.xdotarray[-1]+0j)))
@@ -302,13 +340,13 @@ class Spacecraft(object):
 					,self.zarray[-1]+0j,self.ydotarray[-1]+0j)])
 			self.zdotdotarray.extend([acceleration_z(self.xarray[-1]+0j,self.yarray[-1]+0j\
 					,self.zarray[-1]+0j,self.zdotarray[-1]+0j)])
-
+######################################################################
+########################### DO NOT TOUCH #############################
+######################################################################
 
 			percentage = (float(k)/numsteps)*100.
 			print str(int(percentage))+' percent finished'
 			print "x: "+str(self.xarray[-1])
 			print "y: "+str(self.yarray[-1])
 			print "z: "+str(self.zarray[-1])
-			print solarsystem.acc_x
 			print "\n\n"
-

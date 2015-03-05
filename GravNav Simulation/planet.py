@@ -29,7 +29,8 @@ class Planet(object):
 		, drag_x = None,drag_y=None,drag_z=None, xdot = Symbol('xdot')\
 		,ydot = Symbol('ydot'),zdot = Symbol('zdot'), po =None,To = None\
 		, g = None,L=None, R = None,M = None, J2=None, radius = None\
-		,dragflag = None, c=None, W=None, G=None):
+		,dragflag = None, c=None, W=None, G=None, planetx = None\
+		,planety = None, planetz=None):
 
 		self.configuration = configuration
 
@@ -73,6 +74,21 @@ class Planet(object):
 		(3.*((self.z-self.eci_z)**2.)-(((self.x-self.eci_x)**2.) + \
 			(self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)))))
 
+		if planetdata[0][self.index]!=0:
+			self.planetx = (-self.G*self.mass*planetdata[0][self.index])/(((planetdata[0][self.index])**2. +\
+				(planetdata[1][self.index])**2. + (planetdata[2][self.index])**2)**(3/2.))
+
+			self.planety = (-self.G*self.mass*planetdata[1][self.index])/(((planetdata[0][self.index])**2. +\
+				(planetdata[1][self.index])**2. + (planetdata[2][self.index])**2)**(3/2.))
+
+			self.planetz = (-self.G*self.mass*planetdata[2][self.index])/(((planetdata[0][self.index])**2. +\
+				(planetdata[1][self.index])**2. + (planetdata[2][self.index])**2)**(3/2.))
+
+		else:
+			self.planetx = 0
+			self.planety = 0
+			self.planetz = 0
+
 		self.visualization_potential = -(((self.G*self.mass)/sqrt((self.x-\
 			self.eci_x)**2.+(self.y-self.eci_y)**2.))+\
 		(self.J2*(1./(sqrt(((self.x-self.eci_x)**2.)+\
@@ -114,7 +130,8 @@ class Planet(object):
 		, drag_x = None,drag_y=None,drag_z=None, xdot = Symbol('xdot')\
 		,ydot = Symbol('ydot'),zdot = Symbol('zdot'), po =None,To = None\
 		, g = None,L=None, R = None,M = None, J2=None, radius = None\
-		,dragflag = None, c=None, W=None, G=None):
+		,dragflag = None, c=None, W=None, G=None, planetx = None\
+		,planety = None, planetz=None):
 
 		self.configuration = configuration
 
@@ -128,7 +145,6 @@ class Planet(object):
 
 		self.mass = planetdata[3]
 		self.eci_x = planetdata[0][self.index]
-		print self.eci_x
 		self.eci_y = planetdata[1][self.index]
 		self.eci_z = planetdata[2][self.index]
 		self.J2 = planetdata[5]
@@ -151,12 +167,27 @@ class Planet(object):
 		self.W = universedata[5]
 		self.G = universedata[6]
 
-		self.potential = -(((self.G*self.mass)/sqrt((self.x-self.eci_x)**2. +\
+		self.potential = (-(((self.G*self.mass)/sqrt((self.x-self.eci_x)**2. +\
 		 (self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.))\
 		+(self.J2*(1./(sqrt(((self.x-self.eci_x)**2.)+((self.y-self.eci_y)**2.)\
 			+((self.z-self.eci_z)**2.))**5.))*(1./2.)*\
 		(3.*((self.z-self.eci_z)**2.)-(((self.x-self.eci_x)**2.) + \
-			(self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.))))
+			(self.y-self.eci_y)**2. + (self.z-self.eci_z)**2.)))))
+
+		if planetdata[0][self.index]!=0:
+			self.planetx = (-self.G*self.mass*planetdata[0][self.index])/(((planetdata[0][self.index])**2. +\
+				(planetdata[1][self.index])**2. + (planetdata[2][self.index])**2)**(3/2.))
+
+			self.planety = (-self.G*self.mass*planetdata[1][self.index])/(((planetdata[0][self.index])**2. +\
+				(planetdata[1][self.index])**2. + (planetdata[2][self.index])**2)**(3/2.))
+
+			self.planetz = (-self.G*self.mass*planetdata[2][self.index])/(((planetdata[0][self.index])**2. +\
+				(planetdata[1][self.index])**2. + (planetdata[2][self.index])**2)**(3/2.))
+
+		else:
+			self.planetx = 0
+			self.planety = 0
+			self.planetz = 0
 
 		self.visualization_potential = -(((self.G*self.mass)/sqrt((self.x-\
 			self.eci_x)**2.+(self.y-self.eci_y)**2.))+\

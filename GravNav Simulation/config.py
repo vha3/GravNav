@@ -6,11 +6,24 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy
 import math
 
+#Position of moon every 5 min for 20 hr
 stkmoonx5, stkmoony5, stkmoonz5 = numpy.loadtxt("STK_5min_moon.txt", unpack=True)
+#position of spacecraft every 5 min for 20 hr
 stkscx5, stkscy5, stkscz5 = numpy.loadtxt("STK_5min_sc.txt", unpack=True)
-
+#position of moon every 5 min for 40 hr
+stkmoonx5_2x, stkmoony5_2x, stkmoonz5_2x = numpy.loadtxt("STK_moon_5min_2x.txt", unpack=True)
+#position of sun every 5 min for 40 hr
+stksunx5_2x, stksuny5_2x, stksunz5_2x = numpy.loadtxt("STK_sun_5min_2x.txt", unpack=True)
+#position of spacecraft, sans sun drag and pressure, for 40 hr
+stkscx5_2x_sans_sun, stkscy5_2x_sans_sun, stkscz5_2x_sans_sun = numpy.loadtxt("STK_sat_no_drag_press_sun.txt", unpack=True)
+#position of spacecraft, sans drag and pressure, for 40 hr
+stkscx5_2x_with_sun, stkscy5_2x_with_sun, stkscz5_2x_with_sun = numpy.loadtxt("STK_sat_no_drag_press.txt", unpack=True)
+#position of moon every 1 min for 20 hr
 stkmoonx1, stkmoony1, stkmoonz1 = numpy.loadtxt("STK_1min_moon.txt", unpack=True)
+#position of spacecraft every 1 min for 20 hr (all effects)
 stkscx1, stkscy1, stkscz1 = numpy.loadtxt("STK_1min_sc.txt", unpack=True)
+#position of spacecraft every 5 min for 40 hour (all effects)
+stkscx5_2x_all, stkscy5_2x_all, stkscz5_2x_all = numpy.loadtxt("STK_satellite_2x_with_drag_sun_pressure.txt", unpack=True)
 
 ####################################
 ## NOTE: Using units of km, NOT m ##
@@ -29,7 +42,51 @@ stkscx1, stkscy1, stkscz1 = numpy.loadtxt("STK_1min_sc.txt", unpack=True)
 #########################################################
 ## The Moon #############################################
 #########################################################
-moonx, moony, moonz = numpy.loadtxt("STK_1min_moon.txt", unpack=True) #km
+# t=Symbol('t')
+# moonxeqn = (1.9e-25)*(t**5)-(2.2e-19)*(t**4)-(8.7e-13)*(t**3)\
+# +(7.2e-7)*(t**2)+.78*t-2.3e5
+# moonyeqn = (4.5e-26)*(t**5)-(5.6e-19)*(t**4)+(5.1e-13)*(t**3)\
+# +(9.5e-7)*(t**2)-.53*t-3.1e5
+# moonzeqn = (3.4e-27)*(t**5)-(1.8e-19)*(t**4)+(2.4e-13)*(t**3)\
+# +(2.9e-7)*(t**2)-.24*t-9.8e4
+# xeq = lambdify((t),moonxeqn)
+# yeq = lambdify((t),moonyeqn)
+# zeq = lambdify((t),moonzeqn)
+
+# moonx = []
+# moony = []
+# moonz = []
+# for i in range(2654):
+# 	moonx.extend([xeq(i*300)])
+# 	moony.extend([yeq(i*300)])
+# 	moonz.extend([zeq(i*300)])
+
+moonx, moony, moonz = numpy.loadtxt("STK_moon_5min_2x.txt", unpack=True) #km
+
+
+
+moonxinterp=[]
+moonyinterp=[]
+moonzinterp=[]
+for i in range(len(moonx)-1):
+  moonxinterp.extend([(moonx[i]+moonx[i+1])/2])
+  moonyinterp.extend([(moony[i]+moony[i+1])/2])
+  moonzinterp.extend([(moonz[i]+moonz[i+1])/2])
+
+newmoonx=[]
+newmoony=[]
+newmoonz=[]
+
+for i in range(len(moonx)-1):
+  newmoonx.extend([moonx[i]])
+  newmoonx.extend([moonxinterp[i]])
+  newmoony.extend([moony[i]])
+  newmoony.extend([moonyinterp[i]])
+  newmoonz.extend([moonz[i]])
+  newmoonz.extend([moonzinterp[i]])
+
+
+
 moonmass = 7.34767309e22 #kg
 moonradius = 1737.53 #km
 moonJ2 = 0.
@@ -41,26 +98,6 @@ moonR = 0.
 moonM = 0.
 moondragFlag = False
 
-
-moonx_interp=[]
-moony_interp=[]
-moonz_interp=[]
-for i in range(len(moonx)-1):
-	moonx_interp.extend([(moonx[i]+moonx[i+1])/2])
-	moony_interp.extend([(moony[i]+moony[i+1])/2])
-	moonz_interp.extend([(moonz[i]+moonz[i+1])/2])
-
-newmoonx=[]
-newmoony=[]
-newmoonz=[]
-for i in range(len(moonx)-1):
-	newmoonx.extend([moonx[i]])
-	newmoonx.extend([moonx_interp[i]])
-	newmoony.extend([moony[i]])
-	newmoony.extend([moony_interp[i]])
-	newmoonz.extend([moonz[i]])
-	newmoonz.extend([moonz_interp[i]])
-
 moon = [newmoonx, newmoony, newmoonz, moonmass, moonradius,\
  moonJ2, moonpo, moonTo, moong, moonL, moonR, moonM,\
   moondragFlag]
@@ -68,7 +105,48 @@ moon = [newmoonx, newmoony, newmoonz, moonmass, moonradius,\
 ########################################################
 ## The Sun #############################################
 ########################################################
-sunx, suny, sunz = numpy.loadtxt("sun.txt", unpack=True)
+# sunxeqn = (-2.2e-13)*(t**3)+(3.5e-7)*(t**2)+30*t-1.6e7
+# sunyeqn = (-1.6e-20)*(t**4)+(2.9e-14)*(t**3)+(2.8e-6)*(t**2)\
+# -3*t-(1.3e8)
+# sunzeqn = (-6.6e-21)*(t**4)+(1.3e-14)*(t**3)+(1.2e-6)*(t**2)\
+# -1.3*t-(5.8e7)
+# sunxeq = lambdify((t),sunxeqn)
+# sunyeq = lambdify((t),sunyeqn)
+# sunzeq = lambdify((t),sunzeqn)
+
+# sunx = []
+# suny = []
+# sunz = []
+# for i in range(2654):
+#   sunx.extend([sunxeq(i*300)])
+#   suny.extend([sunyeq(i*300)])
+#   sunz.extend([sunzeq(i*300)])
+
+sunx, suny, sunz = numpy.loadtxt("STK_sun_5min_2x.txt", unpack=True)
+
+
+sunxinterp=[]
+sunyinterp=[]
+sunzinterp=[]
+for i in range(len(sunx)-1):
+  sunxinterp.extend([(sunx[i]+sunx[i+1])/2])
+  sunyinterp.extend([(suny[i]+suny[i+1])/2])
+  sunzinterp.extend([(sunz[i]+sunz[i+1])/2])
+
+newsunx=[]
+newsuny=[]
+newsunz=[]
+
+for i in range(len(sunx)-1):
+  newsunx.extend([sunx[i]])
+  newsunx.extend([sunxinterp[i]])
+  newsuny.extend([suny[i]])
+  newsuny.extend([sunyinterp[i]])
+  newsunz.extend([sunz[i]])
+  newsunz.extend([sunzinterp[i]])
+
+
+
 sunmass = 1.988544e30
 sunradius = 6.963e5
 sunJ2 = 0.
@@ -81,7 +159,7 @@ sunM = 0.
 sundragFlag = False
 sun = [sunx, suny, sunz]
 
-sun = [sunx, suny, sunz, sunmass, sunradius,\
+sun = [newsunx, newsuny, newsunz, sunmass, sunradius,\
  sunJ2, sunpo, sunTo, sung, sunL, sunR, sunM,\
   sundragFlag]
 
@@ -105,8 +183,9 @@ earth = [earthx, earthy, earthz, earthmass, earthradius,\
  earthJ2, earthpo, earthTo, earthg, earthL, earthR, earthM,\
   earthdragFlag]
 
-
+########################################################
 ## Earth that propagates through space
+########################################################
 earthpx = []
 earthpy = []
 earthpz = []
@@ -145,27 +224,67 @@ heavyearth = [heavyearthx, heavyearthy, heavyearthz, heavyearthmass, heavyearthr
 ########################################################
 ## Another Earth #######################################
 ########################################################
-anotherearthx, anotherearthy, anotherearthz = numpy.array(numpy.zeros(len(moon[0]))),\
+anotherxearthx, anotherxearthy, anotherxearthz = numpy.array(numpy.zeros(len(moon[0]))),\
 numpy.array(numpy.zeros(len(moon[0]))),numpy.array(numpy.zeros(len(moon[0])))
-anotherearthy = anotherearthy + 25000
-anotherearthz = anotherearthz + 20000
-anotherearthmass = 5.972e24
-anotherearthradius = numpy.double(6.371e3)
-anotherearthJ2 = numpy.double(1.7555e10)
-anotherearthpo = numpy.double(1.01325e2)
-anotherearthTo = numpy.double(288.15)
-anotherearthg = numpy.double(9.80665e-3)
-anotherearthL = numpy.double(6.5)
-anotherearthR = numpy.double(8.31447e0)
-anotherearthM = 2.89644e-2
-anotherearthdragFlag = False
+anotherxearthx = anotherxearthx + 100000
+anotherxearthmass = 5.97219e24
+anotherxearthradius = numpy.double(6.371e3)
+anotherxearthJ2 = numpy.double(1.7555e10)
+anotherxearthpo = numpy.double(1.01325e2)
+anotherxearthTo = numpy.double(288.15)
+anotherxearthg = numpy.double(9.80665e-3)
+anotherxearthL = numpy.double(6.5)
+anotherxearthR = numpy.double(8.31447e0)
+anotherxearthM = 2.89644e-2
+anotherxearthdragFlag = False
 
-anotherearth = [anotherearthx, anotherearthy, anotherearthz, anotherearthmass, anotherearthradius,\
- anotherearthJ2, anotherearthpo, anotherearthTo, anotherearthg, anotherearthL, anotherearthR, anotherearthM,\
-  anotherearthdragFlag]
+anotherxearth = [anotherxearthx, anotherxearthy, anotherxearthz, anotherxearthmass, anotherxearthradius,\
+ anotherxearthJ2, anotherxearthpo, anotherxearthTo, anotherxearthg, anotherxearthL, anotherxearthR, anotherxearthM,\
+  anotherxearthdragFlag]
+
+anotheryearthx, anotheryearthy, anotheryearthz = numpy.array(numpy.zeros(len(moon[0]))),\
+numpy.array(numpy.zeros(len(moon[0]))),numpy.array(numpy.zeros(len(moon[0])))
+anotheryearthy = anotheryearthy + 100000
+anotheryearthmass = 5.97219e24
+anotheryearthradius = numpy.double(6.371e3)
+anotheryearthJ2 = numpy.double(1.7555e10)
+anotheryearthpo = numpy.double(1.01325e2)
+anotheryearthTo = numpy.double(288.15)
+anotheryearthg = numpy.double(9.80665e-3)
+anotheryearthL = numpy.double(6.5)
+anotheryearthR = numpy.double(8.31447e0)
+anotheryearthM = 2.89644e-2
+anotheryearthdragFlag = False
+
+anotheryearth = [anotheryearthx, anotheryearthy, anotheryearthz, anotheryearthmass, anotheryearthradius,\
+ anotheryearthJ2, anotheryearthpo, anotheryearthTo, anotheryearthg, anotheryearthL, anotheryearthR, anotheryearthM,\
+  anotheryearthdragFlag]
 
 
+anotherzearthx, anotherzearthy, anotherzearthz = numpy.array(numpy.zeros(len(moon[0]))),\
+numpy.array(numpy.zeros(len(moon[0]))),numpy.array(numpy.zeros(len(moon[0])))
+anotherzearthz = anotherzearthz + 100000
+anotherzearthmass = 5.97219e24
+anotherzearthradius = numpy.double(6.371e3)
+anotherzearthJ2 = numpy.double(1.7555e10)
+anotherzearthpo = numpy.double(1.01325e2)
+anotherzearthTo = numpy.double(288.15)
+anotherzearthg = numpy.double(9.80665e-3)
+anotherzearthL = numpy.double(6.5)
+anotherzearthR = numpy.double(8.31447e0)
+anotherzearthM = 2.89644e-2
+anotherzearthdragFlag = False
 
+anotherzearth = [anotherzearthx, anotherzearthy, anotherzearthz, anotherzearthmass, anotherzearthradius,\
+ anotherzearthJ2, anotherzearthpo, anotherzearthTo, anotherzearthg, anotherzearthL, anotherzearthR, anotherzearthM,\
+  anotherzearthdragFlag]
+
+
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
 ####################################
 ## Universal constants #############
 ## and solar system constants ######
@@ -181,7 +300,7 @@ solarFlag = False
 # km to AU conversion
 kmAU = 149597870.700
 
-universe = [sunx,suny,sunz,solarFlag,c,W,G,kmAU]
+universe = [sun[0],sun[1],sun[2],solarFlag,c,W,G,kmAU]
 
 ####################################
 ## Spacecraft Parameters ###########
@@ -201,9 +320,3 @@ propagationFlag = True
 ## and each successive index adds 60
 ## seconds
 index = 0
-
-
-
-
-
-

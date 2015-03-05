@@ -176,12 +176,25 @@ class solarSystem(object):
 		self.acc_y = 0
 		self.acc_z = 0
 
-		self.acc_x = (-diff(self.landscape,self.x) - \
-			(self.ext_x/self.spacecraft.mass))
-		self.acc_y = (-diff(self.landscape,self.y) - \
-			(self.ext_y/self.spacecraft.mass))
-		self.acc_z = (-diff(self.landscape,self.z) - \
-			(self.ext_z/self.spacecraft.mass))
+		earthmotion_x = 0
+		earthmotion_y = 0
+		earthmotion_z = 0
+
+		for i in self.planets:
+			earthmotion_x+=i.planetx
+			earthmotion_y+=i.planety
+			earthmotion_z+=i.planetz
+
+		print earthmotion_x
+		print earthmotion_y
+		print earthmotion_z
+
+		self.acc_x = (-diff(self.landscape,self.x) + earthmotion_x) - \
+			(self.ext_x/self.spacecraft.mass)
+		self.acc_y = (-diff(self.landscape,self.y) + earthmotion_y) - \
+			(self.ext_y/self.spacecraft.mass)
+		self.acc_z = (-diff(self.landscape,self.z) + earthmotion_z) - \
+			(self.ext_z/self.spacecraft.mass)
 
 	def showPotential(self):
 		xlist = []

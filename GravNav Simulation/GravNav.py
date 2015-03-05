@@ -12,10 +12,13 @@ import config
 
 numpy.seterr(all="print")
 
-def runUnitTest():
+def runUnitTestStatic():
+	##########################################################################
+	############################ THE STATIC UNIVERSE #########################
+	##########################################################################
 	viking = Spacecraft()
-	Earth = Planet(spacecraft = viking, configuration="earth")# mass=5.972e24,eci_x=0,eci_y=0,eci_z=0)
-	heavyEarth = Planet(spacecraft = viking, configuration="heavyearth")# mass=5.972e50,eci_x=0,eci_y=0,eci_z=0)
+	Earth = Planet(spacecraft = viking, configuration="earth")
+	heavyEarth = Planet(spacecraft = viking, configuration="heavyearth")
 	solarsystem = solarSystem(spacecraft=viking)
 	solarsystem.addPlanet(Earth)
 
@@ -107,9 +110,9 @@ def runUnitTest():
 
 	## Plot direction of anguluar momentum vector
 	viking.leapFrog(solarsystem, (Earth.radius), 0., 0., 0., (5.5921),(5.5921),60,73571)
-	xdirection = numpy.array(viking.yarray)[:-1]*numpy.array(viking.zdotarray)[:] - numpy.array(viking.zarray)[:-1]*numpy.array(viking.ydotarray)[:]
-	ydirection = numpy.array(viking.zarray)[:-1]*numpy.array(viking.xdotarray)[:] - numpy.array(viking.xarray)[:-1]*numpy.array(viking.zdotarray)[:]
-	zdirection = numpy.array(viking.xarray)[:-1]*numpy.array(viking.ydotarray)[:] - numpy.array(viking.yarray)[:-1]*numpy.array(viking.xdotarray)[:]
+	xdirection = numpy.array(viking.yarray)[:]*numpy.array(viking.zdotarray)[:] - numpy.array(viking.zarray)[:]*numpy.array(viking.ydotarray)[:]
+	ydirection = numpy.array(viking.zarray)[:]*numpy.array(viking.xdotarray)[:] - numpy.array(viking.xarray)[:]*numpy.array(viking.zdotarray)[:]
+	zdirection = numpy.array(viking.xarray)[:]*numpy.array(viking.ydotarray)[:] - numpy.array(viking.yarray)[:]*numpy.array(viking.xdotarray)[:]
 	for i in range(len(xdirection)):
 		xdirection[i] = xdirection[i]/(numpy.sqrt(xdirection[i]**2 + ydirection[i]**2 + zdirection[i]**2))
 		ydirection[i] = ydirection[i]/(numpy.sqrt(xdirection[i]**2 + ydirection[i]**2 + zdirection[i]**2))
@@ -119,6 +122,24 @@ def runUnitTest():
 	ax.plot(xdirection,ydirection,zdirection,label="Direction of angular momentum vector")
 	plt.title("Precession of Angular Momentum Vector for Circular Orbit at Earth Radius, Theoretical Time Required for Full 1 Period")
 	ax.legend(loc='upper right')
+	plt.show()
+
+	## And the energy
+	x = Symbol('x')
+	y = Symbol('y')
+	z = Symbol('z')
+	potential = lambdify((x,y,z), Earth.potential\
+			, modules = 'numpy')
+	potential_energy = viking.mass*(potential(numpy.array(viking.xarray),numpy.array(viking.yarray),numpy.array(viking.zarray)))
+	kinetic_energy = .5*viking.mass*(numpy.array(viking.xdotarray)**2 + numpy.array(viking.ydotarray)**2 + numpy.array(viking.zdotarray)**2)
+	total = potential_energy[:40000]+kinetic_energy[:40000]
+	plt.plot(potential_energy,label="Potential Energy")
+	plt.plot(kinetic_energy,label="Kinetic Energy")
+	plt.plot(total,label="Total Energy")
+	plt.title("Conservation of Energy (Verification of Numeric Integrator)")
+	plt.xlabel("Time (1.5 million timesteps)")
+	plt.ylabel("Energy")
+	plt.legend()
 	plt.show()
 
 
@@ -183,8 +204,8 @@ def runUnitTest():
 	plt.show()
 
 	## Add a gravitating body
-	anotherEarth=Planet(spacecraft=viking, configuration="anotherearth")#mass=5.972e24,eci_x=0,eci_y=25000,eci_z=20000,J2=1.7555e10)
-	solarsystem.addPlanet(anotherEarth)
+	anotherxEarth=Planet(spacecraft=viking, configuration="anotherxearth")#mass=5.972e24,eci_x=0,eci_y=25000,eci_z=20000,J2=1.7555e10)
+	solarsystem.addPlanet(anotherxEarth)
 
 	## Two Gravitating Bodies
 	viking.leapFrog(solarsystem, (Earth.radius), 0., 0., 0., (12),(0),10,20000)
@@ -220,6 +241,114 @@ def runUnitTest():
 	print len(kinetic_energy)
 	print "Initial total energy: "+str(total[0])+"\n"
 	print "Final total energy: "+str(total[-1])+"\n"
+
+
+	viking.leapFrog(solarsystem, 50000,0,0,0,0,0,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - X")
+	plt.legend(loc='upper right')
+	plt.show()
+
+
+	viking.leapFrog(solarsystem, 50000,0,0,0,.5,0,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - X")
+	plt.legend(loc='upper right')
+	plt.show()
+
+	viking.leapFrog(solarsystem, 50000,0,0,0,0,0.5,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - X")
+	plt.legend(loc='upper right')
+	plt.show()
+
+	newsolarsystem = solarSystem(spacecraft=viking)
+	anotheryEarth=Planet(spacecraft=viking, configuration="anotheryearth")
+	newsolarsystem.addPlanet(Earth)
+	newsolarsystem.addPlanet(anotheryEarth)
+
+	viking.leapFrog(newsolarsystem, 0,50000,0,0,0,0,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - Y")
+	plt.legend(loc='upper right')
+	plt.show()
+
+
+	viking.leapFrog(newsolarsystem, 0,50000,0,.5,0,0,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - Y")
+	plt.legend(loc='upper right')
+	plt.show()
+
+	viking.leapFrog(newsolarsystem, 0,50000,0,0,0,0.5,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - Y")
+	plt.legend(loc='upper right')
+	plt.show()
+
+	newnewsolarsystem = solarSystem(spacecraft=viking)
+	anotherzEarth=Planet(spacecraft=viking, configuration="anotherzearth")
+	newnewsolarsystem.addPlanet(Earth)
+	newnewsolarsystem.addPlanet(anotherzEarth)
+
+	viking.leapFrog(newnewsolarsystem, 0,0,50000,0,0,0,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - Z")
+	plt.legend(loc='upper right')
+	plt.show()
+
+
+	viking.leapFrog(newnewsolarsystem, 0,0,50000,.5,0,0,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - Z")
+	plt.legend(loc='upper right')
+	plt.show()
+
+	viking.leapFrog(newnewsolarsystem, 0,0,50000,0,0.5,0,60,2000)
+	plt.plot(viking.xarray,label='x')
+	plt.plot(viking.yarray,label='y')
+	plt.plot(viking.zarray,label='z')
+	plt.xlabel("time")
+	plt.ylabel("position")
+	plt.title("Adding Planets Verification - Z")
+	plt.legend(loc='upper right')
+	plt.show()
+	##########################################################################
+	############################ THE STATIC UNIVERSE #########################
+	##########################################################################
+
 
 
 
@@ -280,8 +409,26 @@ def runUnitTest():
 	# plt.show()
 	# altitude = []
 
+def earthOrbit():
+	earth=Spacecraft()
+	Sun=Planet(spacecraft=earth, configuration = "sun")
+	solarsystem = solarSystem(spacecraft=earth)
+	solarsystem.addPlanet(Sun)
+
+	config.propagationFlag = False
+
+	xpos = 0
+	ypos = 0
+	zpos = 0
+	xvel = 30
+	yvel = 0
+	zvel = 0
+
+	earth.leapFrog(solarsystem,xpos,ypos,zpos,xvel,yvel,zvel,60,525949-1440)
+
 def cubeSat():
 	viking = Spacecraft()
+	viking1 = Spacecraft()
 	Earth = Planet(spacecraft = viking, configuration="earth")
 	Moon = Planet(spacecraft = viking, configuration="moon")
 	Sun = Planet(spacecraft = viking, configuration="sun")
@@ -297,63 +444,38 @@ def cubeSat():
 	xvel = -4.855378922082240e-1
 	yvel = -5.048763191594085e0
 	zvel = -8.799883161637991e-1
-	# viking.leapFrog(solarsystem, xpos, ypos, zpos, xvel, yvel, zvel\
-	# 	,300,242)
-
-	# fig = plt.figure()
-	# ax = fig.gca(projection='3d')
-	# ax.plot(numpy.array(viking.zarray),\
-	# 	numpy.array(viking.yarray),\
-	# 	numpy.array(viking.xarray),\
-	# 	label="Spacecraft Position")
-	# ax.plot(config.moonx[:config.index],\
-	# 	config.moony[:config.index],config.moonz[:config.index],\
-	# 	label="Moon Position")
-
-	# u = numpy.linspace(0, 2 * numpy.pi, 100)
-	# v = numpy.linspace(0, numpy.pi, 100)
-	# x = Earth.radius * numpy.outer(numpy.cos(u), numpy.sin(v))
-	# y = Earth.radius * numpy.outer(numpy.sin(u), numpy.sin(v))
-	# z = Earth.radius * numpy.outer(numpy.ones(numpy.size(u)), numpy.cos(v))
-
-	# xm = Moon.radius * numpy.outer(numpy.cos(u), numpy.sin(v))\
-	#  + config.moonx[config.index]
-	# ym = Moon.radius * numpy.outer(numpy.cos(u), numpy.sin(v))\
-	#  + config.moony[config.index]
-	# zm = Moon.radius * numpy.outer(numpy.cos(u), numpy.sin(v))\
-	#  + config.moonz[config.index]
-
-	# ax.plot_surface(xm,ym,zm, rstride=4, cstride=4,color='r',\
-	# 	label="Moon")
-	# ax.plot_surface(x, y, z,  rstride=4, cstride=4, color='r',\
-	#  label="Earth")
-
-
-	# plt.title("Passive Trajectory")
-	# ax.legend(loc='upper right',prop={'size':10})
-	# plt.show()
-
-	# plt.plot(viking.xarray, label="sim");plt.plot(config.stkscx5, label="stk"); plt.legend(loc='upper right'); plt.show()
-	# plt.plot(viking.yarray, label="sim");plt.plot(config.stkscy5, label="stk"); plt.legend(loc='upper right'); plt.show()
-	# plt.plot(viking.zarray, label="sim");plt.plot(config.stkscz5, label="stk"); plt.legend(loc='upper right'); plt.show()
-
-	# plt.plot(config.moonx[:config.index], label="sim");plt.plot(config.stkmoonx5, label="stk"); plt.legend(loc='upper right'); plt.show()
-	# plt.plot(config.moony[:config.index], label="sim");plt.plot(config.stkmoony5, label="stk"); plt.legend(loc='upper right'); plt.show()
-	# plt.plot(config.moonz[:config.index], label="sim");plt.plot(config.stkmoonz5, label="stk"); plt.legend(loc='upper right'); plt.show()
-
 
 	viking.leapFrog(solarsystem, xpos, ypos, zpos, xvel, yvel, zvel\
-		,30,2402)
+		,75,10612)	
+	solarsystem.addPlanet(Sun)
+	viking1.leapFrog(solarsystem, xpos, ypos, zpos, xvel, yvel, zvel\
+		,75,10612)
 
-	# fig = plt.figure()
-	# ax = fig.gca(projection='3d')
-	# ax.plot(numpy.array(viking.zarray),\
-	# 	numpy.array(viking.yarray),\
-	# 	numpy.array(viking.xarray),\
-	# 	label="Spacecraft Position")
-	# ax.plot(config.moonx[:config.index],\
-	# 	config.moony[:config.index],config.moonz[:config.index],\
-	# 	label="Moon Position")
+	fig = plt.figure()
+	ax = fig.gca(projection='3d')
+	ax.plot(numpy.array(viking.xarray),\
+		numpy.array(viking.yarray),\
+		numpy.array(viking.zarray),\
+		label="Sim Trajectory - Sans Sun")
+	ax.plot(numpy.array(viking1.xarray),\
+		numpy.array(viking1.yarray),\
+		numpy.array(viking1.zarray),\
+		label="Sim Trajectory - With Sun")
+	ax.plot(numpy.array(config.stkscx5_2x_sans_sun),\
+		numpy.array(config.stkscy5_2x_sans_sun),\
+		numpy.array(config.stkscz5_2x_sans_sun),\
+		label="STK Trajectory - Sans Sun")
+	ax.plot(numpy.array(config.stkscx5_2x_with_sun),\
+		numpy.array(config.stkscy5_2x_with_sun),\
+		numpy.array(config.stkscz5_2x_with_sun),\
+		label="STK Trajectory - With Sun")
+	ax.plot(numpy.array(config.stkscx5_2x_all),\
+		numpy.array(config.stkscy5_2x_all),\
+		numpy.array(config.stkscz5_2x_all),\
+		label="STK Trajectory - All Effects")
+	ax.plot(config.moonx[:config.index],\
+		config.moony[:config.index],config.moonz[:config.index],\
+		label="Moon Position")
 
 	# u = numpy.linspace(0, 2 * numpy.pi, 100)
 	# v = numpy.linspace(0, numpy.pi, 100)
@@ -374,38 +496,225 @@ def cubeSat():
 	#  label="Earth")
 
 
-	# plt.title("Passive Trajectory")
-	# ax.legend(loc='upper right',prop={'size':10})
-	# plt.show()
+	plt.title("Passive Trajectory")
+	ax.legend(loc='upper right',prop={'size':10})
+	plt.show()
 
 	plotx=[]
 	ploty=[]
 	plotz=[]
+	plotx1=[]
+	ploty1=[]
+	plotz1=[]
 	for i in range(len(viking.xarray)):
-		if i%2==0:
+		if i%4==0:
 			plotx.extend([viking.xarray[i]])
 			ploty.extend([viking.yarray[i]])
 			plotz.extend([viking.zarray[i]])
+			plotx1.extend([viking1.xarray[i]])
+			ploty1.extend([viking1.yarray[i]])
+			plotz1.extend([viking1.zarray[i]])
 
 	viking.xarray=plotx
 	viking.yarray=ploty
 	viking.zarray=plotz
+	viking1.xarray=plotx1
+	viking1.yarray=ploty1
+	viking1.zarray=plotz1
 
 
-	plt.plot(viking.xarray, label="sim");plt.plot(config.stkscx1, label="stk");plt.title('Spacecraft x position'); plt.legend(loc='upper right'); plt.show()
-	plt.plot(viking.yarray, label="sim");plt.plot(config.stkscy1, label="stk");plt.title('Spacecraft y position'); plt.legend(loc='upper right'); plt.show()
-	plt.plot(viking.zarray, label="sim");plt.plot(config.stkscz1, label="stk");plt.title('Spacecraft z position'); plt.legend(loc='upper right'); plt.show()
+	plt.plot(viking.xarray, label="sim sans sun")
+	plt.plot(viking1.xarray, label="sim with sun")
+	plt.plot(config.stkscx5_2x_sans_sun,label="stk sans sun")
+	plt.plot(config.stkscx5_2x_with_sun,label="stk with sun")
+	plt.plot(config.stkscx5_2x_all,label="stk, all effects")
+	plt.title('Spacecraft x position')
+	plt.xlabel('Time (9 days)')
+	plt.ylabel('Spacecraft position (km)')
+	plt.legend(loc='upper left')
+	plt.show()
 
-	plt.plot(numpy.array(viking.xarray)[:1200]-numpy.array(config.stkscx1)[:1200], label="error in km");plt.title('Accumulated Error between Python and STK 20 hrs - x');plt.legend(loc='upper left'); plt.show()
-	plt.plot(numpy.array(viking.yarray)[:1200]-numpy.array(config.stkscy1)[:1200], label="error in km");plt.title('Accumulated Error between Python and STK 20 hrs - y');plt.legend(loc='upper left'); plt.show()
-	plt.plot(numpy.array(viking.zarray)[:1200]-numpy.array(config.stkscz1)[:1200], label="error in km");plt.title('Accumulated Error between Python and STK 20 hrs - z');plt.legend(loc='upper left'); plt.show()
+	plt.plot(viking.yarray, label="sim sans sun")
+	plt.plot(viking1.yarray, label="sim with sun")
+	plt.plot(config.stkscy5_2x_sans_sun,label="stk sans sun")
+	plt.plot(config.stkscy5_2x_with_sun,label="stk with sun")
+	plt.plot(config.stkscy5_2x_all,label="stk, all effects")
+	plt.xlabel('Time (9 days)')
+	plt.ylabel('Spacecraft position (km)')
+	plt.title('Spacecraft y position')
+	plt.legend(loc='lower left')
+	plt.show()
 
-	plt.plot(numpy.sqrt((numpy.array(viking.xarray)[:1200]-numpy.array(config.stkscx1)[:1200])**2 + (numpy.array(viking.yarray)[:1200]-numpy.array(config.stkscy1)[:1200])**2 + (numpy.array(viking.zarray)[:1200]-numpy.array(config.stkscz1)[:1200])**2),label="Total Accumulated Error - km");plt.title('Total Accumulated Error - 20 hrs');plt.legend(loc='upper left');plt.show()
+	plt.plot(viking.zarray, label="sim sans sun")
+	plt.plot(viking1.zarray, label="sim with sun")
+	plt.plot(config.stkscz5_2x_sans_sun,label="stk sans sun")
+	plt.plot(config.stkscz5_2x_with_sun,label="stk with sun")
+	plt.plot(config.stkscz5_2x_all,label="stk, all effects")
+	plt.xlabel('Time (9 days)')
+	plt.ylabel('Spacecraft position (km)')
+	plt.title('Spacecraft z position');
+	plt.legend(loc='upper left')
+	plt.show()
 
-	# plt.plot(config.moonx[:config.index], label="sim");plt.plot(config.stkmoonx1, label="stk");plt.title('Moon x Position'); plt.legend(loc='upper right'); plt.show()
-	# plt.plot(config.moony[:config.index], label="sim");plt.plot(config.stkmoony1, label="stk");plt.title('Moon y Position'); plt.legend(loc='upper right'); plt.show()
-	# plt.plot(config.moonz[:config.index], label="sim");plt.plot(config.stkmoonz1, label="stk");plt.title('Moon z Position'); plt.legend(loc='upper right'); plt.show()
 
+	plt.plot(numpy.array(viking.xarray)[:2652]-\
+		numpy.array(config.stkscx5_2x_sans_sun)[:2652],\
+		 label="error in km - sans sun sim & sans sun STK")
+	plt.plot(numpy.array(viking.xarray)[:2652]-\
+		 numpy.array(config.stkscx5_2x_with_sun)[:2652],\
+		 label="error in km - sans sun sim & with sun STK")
+	plt.plot(numpy.array(viking1.xarray)[:2652]-\
+		numpy.array(config.stkscx5_2x_sans_sun)[:2652],\
+		 label="error in km - with sun sim & sans sun STK")
+	plt.plot(numpy.array(viking1.xarray)[:2652]-\
+		 numpy.array(config.stkscx5_2x_with_sun)[:2652],\
+		 label="error in km - with sun sim & with sun STK")
+	plt.plot(numpy.array(viking.xarray)[:2652]-\
+		numpy.array(config.stkscx5_2x_all)[:2652],\
+		 label="error in km - sans sun sim & all effects STK")
+	plt.plot(numpy.array(viking.xarray)[:2652]-\
+		 numpy.array(config.stkscx5_2x_all)[:2652],\
+		 label="error in km - sans sun sim & all effects STK")
+	plt.plot(numpy.array(viking1.xarray)[:2652]-\
+		numpy.array(config.stkscx5_2x_all)[:2652],\
+		 label="error in km - with sun sim & all effects STK")
+	plt.plot(numpy.array(viking1.xarray)[:2652]-\
+		 numpy.array(config.stkscx5_2x_all)[:2652],\
+		 label="error in km - with sun sim & all effects STK")
+
+	plt.title('Accumulated Error between Python and STK 9 days - x')
+	plt.xlabel('Time (9 days)')
+	plt.ylabel('Error in km')
+	plt.legend(loc='lower left')
+	plt.show()
+
+
+
+	plt.plot(numpy.array(viking.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_sans_sun)[:2652],\
+		 label="error in km - sans sun sim & sans sun STK")
+	plt.plot(numpy.array(viking.yarray)[:2652]-\
+		 numpy.array(config.stkscy5_2x_with_sun)[:2652],\
+		 label="error in km - sans sun sim & with sun")
+	plt.plot(numpy.array(viking1.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_sans_sun)[:2652],\
+		 label="error in km - with sun sim & sans sun STK")
+	plt.plot(numpy.array(viking1.yarray)[:2652]-\
+		 numpy.array(config.stkscy5_2x_with_sun)[:2652],\
+		 label="error in km - with sun sim & with sun")
+	plt.plot(numpy.array(viking.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_all)[:2652],\
+		 label="error in km - sans sun sim & all effects STK")
+	plt.plot(numpy.array(viking.yarray)[:2652]-\
+		 numpy.array(config.stkscy5_2x_all)[:2652],\
+		 label="error in km - sans sun sim & all effects STK")
+	plt.plot(numpy.array(viking1.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_all)[:2652],\
+		 label="error in km - with sun sim & all effects STK")
+	plt.plot(numpy.array(viking1.yarray)[:2652]-\
+		 numpy.array(config.stkscy5_2x_all)[:2652],\
+		 label="error in km - with sun sim & all effects STK")
+	plt.xlabel('Time (9 days)')
+	plt.ylabel('Error in km')
+	plt.title('Accumulated Error between Python and STK 9 days - y')
+	plt.legend(loc='lower left')
+	plt.show()
+
+
+
+	plt.plot(numpy.array(viking.zarray)[:2652]-\
+		numpy.array(config.stkscz5_2x_sans_sun)[:2652],\
+		 label="error in km - sans sun sim & sans sun STK")
+	plt.plot(numpy.array(viking.zarray)[:2652]-\
+		 numpy.array(config.stkscz5_2x_with_sun)[:2652],\
+		 label="error in km - sans sun sim & with sun STK")
+	plt.plot(numpy.array(viking1.zarray)[:2652]-\
+		numpy.array(config.stkscz5_2x_sans_sun)[:2652],\
+		 label="error in km - with sun sim & sans sun STK")
+	plt.plot(numpy.array(viking1.zarray)[:2652]-\
+		 numpy.array(config.stkscz5_2x_with_sun)[:2652],\
+		 label="error in km - with sun sim & with sun STK")
+	plt.plot(numpy.array(viking.zarray)[:2652]-\
+		numpy.array(config.stkscz5_2x_all)[:2652],\
+		 label="error in km - sans sun sim & all effects STK")
+	plt.plot(numpy.array(viking.zarray)[:2652]-\
+		 numpy.array(config.stkscz5_2x_all)[:2652],\
+		 label="error in km - sans sun sim & all effects STK")
+	plt.plot(numpy.array(viking1.zarray)[:2652]-\
+		numpy.array(config.stkscz5_2x_all)[:2652],\
+		 label="error in km - with sun sim & all effects STK")
+	plt.plot(numpy.array(viking1.zarray)[:2652]-\
+		 numpy.array(config.stkscz5_2x_all)[:2652],\
+		 label="error in km - with sun sim & all effects STK")
+	plt.xlabel('Time (9 days)')
+	plt.ylabel('Error in km')
+	plt.title('Accumulated Error between Python and STK 9 days - z')
+	plt.legend(loc='lower left')
+	plt.show()
+
+
+
+	plt.plot(numpy.sqrt((numpy.array(viking.xarray)[:2652]\
+		-numpy.array(config.stkscx5_2x_sans_sun)[:2652])**2 + \
+	(numpy.array(viking.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_sans_sun)[:2652])**2 +\
+		 (numpy.array(viking.zarray)[:2652]-\
+		 	numpy.array(config.stkscz5_2x_sans_sun)[:2652])**2)\
+	,label="Total Accumulated Error Sans Sun Sim & Sans Sun STK- km")
+	plt.plot(numpy.sqrt((numpy.array(viking.xarray)[:2652]\
+		-numpy.array(config.stkscx5_2x_with_sun)[:2652])**2 + \
+	(numpy.array(viking.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_with_sun)[:2652])**2 +\
+		 (numpy.array(viking.zarray)[:2652]-\
+		 	numpy.array(config.stkscz5_2x_with_sun)[:2652])**2)\
+	,label="Total Accumulated Error Sans Sun Sim & With Sun STK- km")
+	plt.plot(numpy.sqrt((numpy.array(viking1.xarray)[:2652]\
+		-numpy.array(config.stkscx5_2x_sans_sun)[:2652])**2 + \
+	(numpy.array(viking1.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_sans_sun)[:2652])**2 +\
+		 (numpy.array(viking1.zarray)[:2652]-\
+		 	numpy.array(config.stkscz5_2x_sans_sun)[:2652])**2)\
+	,label="Total Accumulated Error With Sun Sim & Sans Sun STK- km")
+	plt.plot(numpy.sqrt((numpy.array(viking1.xarray)[:2652]\
+		-numpy.array(config.stkscx5_2x_with_sun)[:2652])**2 + \
+	(numpy.array(viking1.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_with_sun)[:2652])**2 +\
+		 (numpy.array(viking1.zarray)[:2652]-\
+		 	numpy.array(config.stkscz5_2x_with_sun)[:2652])**2)\
+	,label="Total Accumulated Error With Sun Sim & With Sun STK- km")
+	plt.plot(numpy.sqrt((numpy.array(viking.xarray)[:2652]\
+		-numpy.array(config.stkscx5_2x_all)[:2652])**2 + \
+	(numpy.array(viking.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_all)[:2652])**2 +\
+		 (numpy.array(viking.zarray)[:2652]-\
+		 	numpy.array(config.stkscz5_2x_all)[:2652])**2)\
+	,label="Total Accumulated Error Sans Sun Sim & All Effects STK- km")
+	plt.plot(numpy.sqrt((numpy.array(viking.xarray)[:2652]\
+		-numpy.array(config.stkscx5_2x_all)[:2652])**2 + \
+	(numpy.array(viking.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_all)[:2652])**2 +\
+		 (numpy.array(viking.zarray)[:2652]-\
+		 	numpy.array(config.stkscz5_2x_all)[:2652])**2)\
+	,label="Total Accumulated Error Sans Sun Sim & All Effects STK- km")
+	plt.plot(numpy.sqrt((numpy.array(viking1.xarray)[:2652]\
+		-numpy.array(config.stkscx5_2x_all)[:2652])**2 + \
+	(numpy.array(viking1.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_all)[:2652])**2 +\
+		 (numpy.array(viking1.zarray)[:2652]-\
+		 	numpy.array(config.stkscz5_2x_all)[:2652])**2)\
+	,label="Total Accumulated Error With Sun Sim & All Effects STK- km")
+	plt.plot(numpy.sqrt((numpy.array(viking1.xarray)[:2652]\
+		-numpy.array(config.stkscx5_2x_all)[:2652])**2 + \
+	(numpy.array(viking1.yarray)[:2652]-\
+		numpy.array(config.stkscy5_2x_all)[:2652])**2 +\
+		 (numpy.array(viking1.zarray)[:2652]-\
+		 	numpy.array(config.stkscz5_2x_all)[:2652])**2)\
+	,label="Total Accumulated Error With Sun Sim & All Effects STK- km")
+	plt.title('Total Accumulated Error - 9 days')
+	plt.legend(loc='upper left')
+	plt.show()
+
+	
 def drifters():
 
 	config.propagationFlag = False
@@ -512,8 +821,7 @@ def drifters():
 	plt.show()
 
 
+#earthOrbit()
 cubeSat()
-#runUnitTest()
+#runUnitTestStatic()
 #drifters()
-
-	
