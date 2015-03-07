@@ -128,7 +128,7 @@ class solarSystem(object):
 			solar_dist = sqrt(solar_x**2. +solar_y**2. +solar_z**2.)
 
 			solar_magnitude = (self.W/(self.c*((solar_x)**2. + (solar_y)**2. +\
-			(solar_z)**2)*(1./149597870.700)))*spacecraft.A # max angle
+			(solar_z)**2)*(1./config.kmAU)))*spacecraft.A # max angle
 
 			self.solarx = solar_magnitude*(solar_x/solar_dist)
 			self.solary = solar_magnitude*(solar_y/solar_dist)
@@ -176,6 +176,7 @@ class solarSystem(object):
 		self.acc_y = 0
 		self.acc_z = 0
 
+		## Subtract off acceleration of reference frame
 		earthmotion_x = 0
 		earthmotion_y = 0
 		earthmotion_z = 0
@@ -184,10 +185,6 @@ class solarSystem(object):
 			earthmotion_x+=i.planetx
 			earthmotion_y+=i.planety
 			earthmotion_z+=i.planetz
-
-		print earthmotion_x
-		print earthmotion_y
-		print earthmotion_z
 
 		self.acc_x = (-diff(self.landscape,self.x) + earthmotion_x) - \
 			(self.ext_x/self.spacecraft.mass)

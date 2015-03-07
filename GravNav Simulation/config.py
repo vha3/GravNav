@@ -57,9 +57,9 @@ stkscx5_2x_all, stkscy5_2x_all, stkscz5_2x_all = numpy.loadtxt("STK_satellite_2x
 # moony = []
 # moonz = []
 # for i in range(2654):
-# 	moonx.extend([xeq(i*300)])
-# 	moony.extend([yeq(i*300)])
-# 	moonz.extend([zeq(i*300)])
+#   moonx.extend([xeq(i*300)])
+#   moony.extend([yeq(i*300)])
+#   moonz.extend([zeq(i*300)])
 
 moonx, moony, moonz = numpy.loadtxt("STK_moon_5min_2x.txt", unpack=True) #km
 
@@ -87,7 +87,7 @@ for i in range(len(moonx)-1):
 
 
 
-moonmass = 7.34767309e22 #kg
+moonmass = 7.3462953861644871e22 #kg
 moonradius = 1737.53 #km
 moonJ2 = 0.
 moonpo = 0.
@@ -147,7 +147,7 @@ for i in range(len(sunx)-1):
 
 
 
-sunmass = 1.988544e30
+sunmass = 1.9885469237800126e30
 sunradius = 6.963e5
 sunJ2 = 0.
 sunpo = 0.
@@ -190,9 +190,9 @@ earthpx = []
 earthpy = []
 earthpz = []
 for i in range(len(earthx)):
-	earthpx.extend([10*i])
-	earthpy.extend([10*i])
-	earthpz.extend([10*i])
+  earthpx.extend([10*i])
+  earthpy.extend([10*i])
+  earthpz.extend([10*i])
 
 earth2 = [earthpx, earthpy, earthpz, earthmass, earthradius,\
  earthJ2, earthpo, earthTo, earthg, earthL, earthR, earthM,\
@@ -305,7 +305,7 @@ universe = [sun[0],sun[1],sun[2],solarFlag,c,W,G,kmAU]
 ####################################
 ## Spacecraft Parameters ###########
 ####################################
-scmass = 100
+scmass = 10
 Cd = 2.2
 A = numpy.double(1.e-6)
 

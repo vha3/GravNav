@@ -6,6 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy
 import math
 import config
+from copy import deepcopy
 ##################################################################
 ## Create the Spacecraft class ###################################
 ##################################################################
@@ -79,11 +80,8 @@ class Spacecraft(object):
 			config.index = 0
 
 			self.xarray.extend([xinit])
-			#self.xarray.extend([xinit])
 			self.yarray.extend([yinit])
-			#self.yarray.extend([yinit])
 			self.zarray.extend([zinit])
-			#self.zarray.extend([zinit])
 			self.xdotarray.extend([xdotinit])
 			self.ydotarray.extend([ydotinit])
 			self.zdotarray.extend([zdotinit])
@@ -133,86 +131,14 @@ class Spacecraft(object):
 						, modules = 'numpy')
 
 
-					if numpy.real(acceleration_x(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.xdotarray[-2]+0j)) <\
-						numpy.real(acceleration_new_x(self.xarray[-1]+0j\
-							,self.yarray[-1]+0j,self.zarray[-1]+0j,self.xdotarray[-1]+0j)):
-						new_weightx=1
-						old_weightx=0
-
-					else:
-						new_weightx=1
-						old_weightx=0
-
-					if numpy.real(acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.ydotarray[-2]+0j)) <\
-						numpy.real(acceleration_new_y(self.xarray[-1]+0j\
-							,self.yarray[-1]+0j,self.zarray[-1]+0j,self.ydotarray[-1]+0j)):
-						new_weighty=1
-						old_weighty=0
-
-					else:
-						new_weighty=1
-						old_weighty=0					
-
-					if numpy.real(acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.zdotarray[-2]+0j)) <\
-						numpy.real(acceleration_new_z(self.xarray[-1]+0j\
-							,self.yarray[-1]+0j,self.zarray[-1]+0j,self.zdotarray[-1]+0j)):
-						new_weightz=1
-						old_weightz=0
-
-					else:
-						new_weightz=1
-						old_weightz=0
-
-					# old_weightx=abs(numpy.real(acceleration_x(self.xarray[-2]+0j,self.yarray[-2]+0j\
-					# 		,self.zarray[-2]+0j,self.xdotarray[-2]+0j)))/\
-					# (abs(numpy.real(acceleration_x(self.xarray[-2]+0j,self.yarray[-2]+0j\
-					# 		,self.zarray[-2]+0j,self.xdotarray[-2]+0j))) +\
-					# 	abs(numpy.real(acceleration_new_x(self.xarray[-1]+0j\
-					# 		,self.yarray[-1]+0j,self.zarray[-1]+0j,self.xdotarray[-1]+0j))))
-
-					# new_weightx = 1.-old_weightx
-
-					# old_weighty=abs(numpy.real(acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j\
-					# 		,self.zarray[-2]+0j,self.ydotarray[-2]+0j)))/\
-					# (abs(numpy.real(acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j\
-					# 		,self.zarray[-2]+0j,self.ydotarray[-2]+0j))) +\
-					# 	abs(numpy.real(acceleration_new_y(self.xarray[-1]+0j\
-					# 		,self.yarray[-1]+0j,self.zarray[-1]+0j,self.ydotarray[-1]+0j))))
-
-					# new_weighty = 1.-old_weighty
-
-					# old_weightz=abs(numpy.real(acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j\
-					# 		,self.zarray[-2]+0j,self.zdotarray[-2]+0j)))/\
-					# (abs(numpy.real(acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j\
-					# 		,self.zarray[-2]+0j,self.zdotarray[-2]+0j))) +\
-					# 	abs(numpy.real(acceleration_new_z(self.xarray[-1]+0j\
-					# 		,self.yarray[-1]+0j,self.zarray[-1]+0j,self.zdotarray[-1]+0j))))
-
-					# new_weightz = 1.-old_weightz
-
-
-
-
-
-
-
 					self.xdottemp = (self.xdotarray[-2] + dt*\
-						((old_weightx*acceleration_x(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.xdotarray[-2]+0j)+\
-						new_weightx*acceleration_new_x(self.xarray[-1]+0j\
+						((acceleration_new_x(self.xarray[-1]+0j\
 							,self.yarray[-1]+0j,self.zarray[-1]+0j,self.xdotarray[-1]+0j))))
 					self.ydottemp = (self.ydotarray[-2] + dt*\
-						((old_weighty*acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.ydotarray[-2]+0j)+\
-						new_weighty*acceleration_new_y(self.xarray[-1]+0j\
+						((acceleration_new_y(self.xarray[-1]+0j\
 							,self.yarray[-1]+0j,self.zarray[-1]+0j,self.ydotarray[-1]+0j))))
 					self.zdottemp = (self.zdotarray[-2] + dt*\
-						((old_weightz*acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.zdotarray[-2]+0j)+\
-						new_weightz*acceleration_new_z(self.xarray[-1]+0j\
+						((acceleration_new_z(self.xarray[-1]+0j\
 							,self.yarray[-1]+0j,self.zarray[-1]+0j,self.zdotarray[-1]+0j))))
 
 
@@ -235,21 +161,15 @@ class Spacecraft(object):
 
 
 					self.xdotarray[-1]=(self.xdotarray[-2] + \
-						dt*((old_weightx*acceleration_x(self.xarray[-2]+0j,self.yarray[-2]+0j,\
-							self.zarray[-2]+0j,self.xdotn+0j)+\
-						new_weightx*acceleration_new_x(self.xarray[-1]+0j\
+						dt*((acceleration_new_x(self.xarray[-1]+0j\
 						,self.yarray[-1]+0j,self.zarray[-1]+0j,self.xdotn+0j))))
 
 					self.ydotarray[-1]=(self.ydotarray[-2] + \
-						dt*((old_weighty*acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j,\
-							self.zarray[-2]+0j,self.ydotn+0j)+\
-						new_weighty*acceleration_new_y(self.xarray[-1]+0j\
+						dt*((acceleration_new_y(self.xarray[-1]+0j\
 						,self.yarray[-1]+0j,self.zarray[-1]+0j,self.ydotn+0j))))
 
 					self.zdotarray[-1]=(self.zdotarray[-2] + \
-						dt*((old_weightz*acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j,\
-							self.zarray[-2]+0j,self.zdotn+0j)+\
-						new_weightz*acceleration_new_z(self.xarray[-1]+0j\
+						dt*((acceleration_new_z(self.xarray[-1]+0j\
 						,self.yarray[-1]+0j,self.zarray[-1]+0j,self.zdotn+0j))))
 
 
@@ -259,28 +179,22 @@ class Spacecraft(object):
 					self.zarray[-1]=(self.zarray[-2] + dt*self.zdotarray[-2])
 
 
-					self.xdotdotarray[-1]=(old_weightx*acceleration_x(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.xdotarray[-2]+0j) + \
-					new_weightx*acceleration_new_x(self.xarray[-1]+0j,self.yarray[-1]+0j,self.zarray[-1]+0j\
+					self.xdotdotarray[-1]=(acceleration_new_x(self.xarray[-1]+0j,self.yarray[-1]+0j,self.zarray[-1]+0j\
 						,self.xdotarray[-1]+0j))
 
-					self.ydotdotarray[-1]=(old_weighty*acceleration_y(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.ydotarray[-2]+0j) + \
-					new_weighty*acceleration_new_y(self.xarray[-1]+0j,self.yarray[-1]+0j,self.zarray[-1]+0j\
+					self.ydotdotarray[-1]=(acceleration_new_y(self.xarray[-1]+0j,self.yarray[-1]+0j,self.zarray[-1]+0j\
 						,self.ydotarray[-1]+0j))
 
-					self.zdotdotarray[-1]=(old_weightz*acceleration_z(self.xarray[-2]+0j,self.yarray[-2]+0j\
-							,self.zarray[-2]+0j,self.zdotarray[-2]+0j) + \
-					new_weightz*acceleration_new_z(self.xarray[-1]+0j,self.yarray[-1]+0j,self.zarray[-1]+0j\
+					self.zdotdotarray[-1]=(acceleration_new_z(self.xarray[-1]+0j,self.yarray[-1]+0j,self.zarray[-1]+0j\
 						,self.zdotarray[-1]+0j))
 
 
-					acceleration_x = lambdify((x,y,z,xdot), solarsystem.acc_x\
-						, modules = 'numpy')
-					acceleration_y = lambdify((x,y,z,ydot), solarsystem.acc_y\
-						, modules = 'numpy')
-					acceleration_z = lambdify((x,y,z,zdot), solarsystem.acc_z\
-						, modules = 'numpy')
+					acceleration_x = deepcopy(acceleration_new_x) #lambdify((x,y,z,xdot), solarsystem.acc_x\
+						#, modules = 'numpy')
+					acceleration_y = deepcopy(acceleration_new_y) #lambdify((x,y,z,ydot), solarsystem.acc_y\
+						#, modules = 'numpy')
+					acceleration_z = deepcopy(acceleration_new_z) #lambdify((x,y,z,zdot), solarsystem.acc_z\
+						#, modules = 'numpy')
 
 				else:
 					pass
